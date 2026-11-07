@@ -77,6 +77,7 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 .thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.thumbs div{position:relative}.thumbs img{width:64px;height:44px;object-fit:cover;border-radius:6px;display:block}
 .thumbs button{position:absolute;top:-6px;right:-6px;padding:0;width:18px;height:18px;border-radius:50%;font-size:11px;line-height:18px;background:#d33}
 .note{color:var(--m);font-size:13px}
+.row a{color:var(--a)}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.kpi .stat b{font-size:28px}
 </style>
 </head>
@@ -135,7 +136,7 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 <h2 class="sec" id="contact">Let's talk about your project</h2>
 <div class="cbox">
 <div class="card"><h3 style="margin-top:0">Send an enquiry</h3>
-<input id="q_n" placeholder="Your name" maxlength="100"><input id="q_c" placeholder="Email or phone" maxlength="100" autocapitalize="none" autocorrect="off">
+<input id="q_n" placeholder="Your name" maxlength="100" autocomplete="name"><input id="q_e" type="email" placeholder="Email address" maxlength="100" autocomplete="email" autocapitalize="none" autocorrect="off" inputmode="email"><input id="q_p" type="tel" placeholder="Phone / WhatsApp number" maxlength="30" autocomplete="tel" inputmode="tel">
 <textarea id="q_m" rows="4" placeholder="How can we help?" maxlength="1000"></textarea>
 <button id="q_b">Send enquiry</button> <span class="note" id="q_s"></span></div>
 <div class="card"><h3 style="margin-top:0">Get in touch</h3><p id="cinfo">Contact details coming soon.</p>
@@ -185,6 +186,7 @@ const app=initializeApp(firebaseConfig),auth=initializeAuth(app,{persistence:[in
 try{getAnalytics(app)}catch(e){}
 const $=i=>document.getElementById(i);
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const cl=c=>String(c||"").split(" · ").map(p=>{p=p.trim();if(!p)return"";if(p.includes("@"))return `<a href="mailto:${esc(p)}">${esc(p)}</a>`;const d=p.replace(/[^\d+]/g,"");if(d.length>=7)return `<a href="tel:${esc(d)}">${esc(p)}</a>`+(/^0/.test(d)?"":` · <a href="https://wa.me/${d.replace(/\D/g,"")}" target="_blank" rel="noopener">WhatsApp</a>`);return esc(p)}).join(" · ");
 const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
 const data={tasks:[],projects:[],leads:[],tests:[],visits:[],site:{}};
 const COL={tasks:"tasks",projects:"projects",leads:"leads",tests:"testimonials"};
@@ -259,7 +261,7 @@ function renderAdm(){
  if(tab==="ov"){
   const open=data.tasks.filter(t=>!t.done).length,nl=data.leads.filter(l=>l.s==="New").length,won=data.leads.filter(l=>l.s==="Won").length;
   h=`<div class="kpi"><div class="stat"><b>${open}</b><span>Open tasks</span></div><div class="stat"><b>${nl}</b><span>New leads</span></div><div class="stat"><b>${won}</b><span>Won clients</span></div><div class="stat"><b>${data.projects.filter(x=>x.live).length}/${data.projects.length}</b><span>Projects live</span></div></div><h3>Latest enquiries</h3>`;
-  h+=[...data.leads].sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,4).map(x=>`<div class="row"><div><b>${esc(x.n)}</b> · ${esc(x.s)}<small>${esc(x.c)}</small><small>${esc(x.m)}</small></div></div>`).join("")||'<p class="note">No leads yet.</p>';
+  h+=[...data.leads].sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,4).map(x=>`<div class="row"><div><b>${esc(x.n)}</b> · ${esc(x.s)}<small>${cl(x.c)}</small><small>${esc(x.m)}</small></div></div>`).join("")||'<p class="note">No leads yet.</p>';
  }else if(tab==="visits"){
   const V=data.visits,day=864e5,d0=new Date();d0.setHours(0,0,0,0);const t0=d0.getTime();
   const inR=n=>V.filter(v=>v.at>=t0-(n-1)*day);
@@ -284,7 +286,7 @@ function renderAdm(){
  }else if(tab==="leads"){
   h=form([{k:"n",p:"Client / contact name"},{k:"c",p:"Email or phone"},{k:"s",t:"sel",o:STAGES},{k:"m",t:"area",p:"Notes"}],"Add lead");
   h+='<p class="note">Website enquiries land here automatically.</p>';
-  h+=[...data.leads].sort((a,b)=>(b.at||0)-(a.at||0)).map(x=>`<div class="row"><div><b>${esc(x.n)}</b><small>${esc(x.c)}</small><small>${esc(x.m)}</small></div><div class="acts"><select data-a="stage" data-id="${x.id}">${STAGES.map(s=>`<option ${s===x.s?"selected":""}>${s}</option>`).join("")}</select><button class="g" data-a="del" data-id="${x.id}">×</button></div></div>`).join("");
+  h+=[...data.leads].sort((a,b)=>(b.at||0)-(a.at||0)).map(x=>`<div class="row"><div><b>${esc(x.n)}</b><small>${cl(x.c)}</small><small>${esc(x.m)}</small></div><div class="acts"><select data-a="stage" data-id="${x.id}">${STAGES.map(s=>`<option ${s===x.s?"selected":""}>${s}</option>`).join("")}</select><button class="g" data-a="del" data-id="${x.id}">×</button></div></div>`).join("");
  }else if(tab==="tests"){
   h=form([{k:"n",p:"Client name"},{k:"r",p:"Role / company (optional)"},{k:"q",t:"area",p:"Testimonial"}],"Add testimonial");
   h+=data.tests.map(x=>`<div class="row"><div><b>${esc(x.n)}</b> <span class="note">${esc(x.r||"")}</span><small>${esc(x.q)}</small></div><div class="acts"><button class="g" data-a="del" data-id="${x.id}">×</button></div></div>`).join("");
@@ -367,11 +369,12 @@ onAuthStateChanged(auth,u=>{
 
 /* visitor enquiry */
 $("q_b").onclick=async()=>{
- const n=$("q_n").value.trim(),c=$("q_c").value.trim(),m=$("q_m").value.trim();
- if(!n||!c){$("q_s").textContent="Please add your name and contact.";return}
+ const n=$("q_n").value.trim(),e=$("q_e").value.trim(),p=$("q_p").value.trim(),m=$("q_m").value.trim(),c=[e,p].filter(Boolean).join(" · ");
+ if(!n||!c){$("q_s").textContent="Please add your name and an email or phone number.";return}
+ if(e&&!/^\S+@\S+\.\S+$/.test(e)){$("q_s").textContent="Please check your email address.";return}
  $("q_s").textContent="Sending…";$("q_b").disabled=true;
  try{await Promise.race([addDoc(collection(db,"leads"),{n,c,m,s:"New",at:Date.now()}),new Promise((_,rj)=>setTimeout(()=>rj({code:"timeout"}),12000))]);
-  $("q_n").value=$("q_c").value=$("q_m").value="";$("q_s").textContent="Thank you! We will be in touch."}
+  $("q_n").value=$("q_e").value=$("q_p").value=$("q_m").value="";$("q_s").textContent="Thank you! We will be in touch."}
  catch(e){$("q_s").textContent="Could not send ("+(e.code||e.message)+"). Please try again."}
  $("q_b").disabled=false;
 };
