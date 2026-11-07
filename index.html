@@ -159,7 +159,7 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 
 <section class="w" id="adm">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">Manager dashboard</h2><span><button class="g" id="back">View site</button> <button class="g" id="out">Sign out</button></span></div>
-<div class="tabs" id="tabs"></div><div id="pane"></div>
+<div class="tabs" id="tabs"></div><div id="err" class="card" style="display:none;border-color:#d33;margin-bottom:12px"></div><div id="pane"></div>
 <input type="file" id="addimg" accept="image/*" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" tabindex="-1">
 </section>
 
@@ -246,9 +246,15 @@ const form=(fields,btn)=>'<div class="card" style="margin-bottom:12px">'+fields.
  return `<input id="f_${f.k}" placeholder="${f.p}">`}).join("")+`<button id="add">${btn}</button> <span class="note" id="f_st"></span></div>`;
 
 /* ---------- manager dashboard ---------- */
-function renderAdm(){
- $("tabs").innerHTML=Object.keys(T).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${T[k]}</button>`).join("");
+function drawTabs(){
+ const nl=data.leads.filter(l=>l.s==="New").length;
+ $("tabs").innerHTML=Object.keys(T).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${T[k]}${k==="leads"&&nl?" ("+nl+" new)":""}</button>`).join("");
  $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;renderAdm()});
+}
+const lerr=c=>e=>{const m=$("err");m.style.display="block";
+ m.innerHTML="<b>Can't load "+esc(c)+"</b> ("+esc(e.code||e.message)+")<br>"+(e.code==="permission-denied"?"Your Firestore rules don't recognise this account. In Firebase open Firestore Database, then Rules, make sure the admin email is <b>"+esc(ADMIN_EMAIL)+"</b>, paste the latest firestore.rules and click Publish. Then refresh this page.":"Check your internet connection and refresh.")};
+function renderAdm(){
+ drawTabs();
  const p=$("pane");let h="";
  if(tab==="ov"){
   const open=data.tasks.filter(t=>!t.done).length,nl=data.leads.filter(l=>l.s==="New").length,won=data.leads.filter(l=>l.s==="Won").length;
@@ -327,7 +333,8 @@ function view(v){
  if(v==="adm")renderAdm();scrollTo(0,0);
 }
 const mapSnap=(key)=>sn=>{data[key]=sn.docs.map(d=>({...d.data(),id:d.id}));
- renderSite();if($("adm").style.display==="block"&&(tab===key||tab==="ov"))renderAdm()};
+ renderSite();if(key==="leads"){$("err").style.display="none";if($("adm").style.display==="block")drawTabs()}
+ if($("adm").style.display==="block"&&(tab===key||tab==="ov"))renderAdm()};
 onSnapshot(doc(db,"site","main"),d=>{data.site=d.data()||{};renderSite();if($("adm").style.display==="block"&&tab==="site")renderAdm()},()=>{});
 onSnapshot(collection(db,"projects"),mapSnap("projects"),()=>{});
 onSnapshot(collection(db,"testimonials"),mapSnap("tests"),()=>{});
@@ -353,8 +360,8 @@ onAuthStateChanged(auth,u=>{
  isMgr=!!u&&u.email===ADMIN_EMAIL;subs.forEach(f=>f());subs=[];
  if(!tracked){tracked=true;if(!isMgr)track()}
  if(isMgr){$("mb").textContent="Manager";
-  ["tasks","leads"].forEach(c=>subs.push(onSnapshot(collection(db,c),mapSnap(c),()=>{})));
-  subs.push(onSnapshot(query(collection(db,"visits"),orderBy("at","desc"),limit(1000)),mapSnap("visits"),()=>{}));view("adm")}
+  ["tasks","leads"].forEach(c=>subs.push(onSnapshot(collection(db,c),mapSnap(c),lerr(c))));
+  subs.push(onSnapshot(query(collection(db,"visits"),orderBy("at","desc"),limit(1000)),mapSnap("visits"),lerr("visits")));view("adm")}
  else{$("mb").textContent="Manager login";view("site");if(u)signOut(auth)}
 });
 
