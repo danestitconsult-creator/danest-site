@@ -191,7 +191,7 @@ $("out").onclick=()=>signOut(auth);
 $("l_b").onclick=async()=>{
  $("l_s").textContent="Signing in…";
  try{await signInWithEmailAndPassword(auth,$("l_e").value.trim(),$("l_p").value);$("l_s").textContent=""}
- catch(e){$("l_s").textContent="Sign-in failed. Check your email and password."}
+ catch(e){$("l_s").textContent="Sign-in failed ("+(e.code||e.message)+")"}
 };
 onAuthStateChanged(auth,u=>{
  isMgr=!!u&&u.email===ADMIN_EMAIL;
