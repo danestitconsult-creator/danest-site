@@ -1,5 +1,5 @@
-const CACHE = "danest-v3";
-const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "danest-v4";
+const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
@@ -13,7 +13,7 @@ self.addEventListener("fetch", e => {
   if (u.hostname.endsWith("googleapis.com") || u.hostname.endsWith("firebaseio.com")) return;
   // Pages: network first, fall back to cache when offline
   if (r.mode === "navigate") {
-    e.respondWith(fetch(r).then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put("index.html", c)); return res; }).catch(() => caches.match("index.html")));
+    e.respondWith(fetch(r).then(res => { if (res.ok && !res.redirected) { const c = res.clone(); caches.open(CACHE).then(x => x.put("index.html", c)); } return res; }).catch(() => caches.match("index.html")));
     return;
   }
   // Everything else: cache first, update in background
