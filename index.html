@@ -135,7 +135,7 @@ footer{margin-top:72px;padding:28px 0;border-top:1px solid var(--b);color:var(--
 <p style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" id="cmail" href="#" style="display:none">Email us</a><a class="btn g" id="cwa" href="#" style="display:none" target="_blank" rel="noopener">WhatsApp</a></p></div>
 </div>
 </div>
-<footer><div class="w">© <span id="yr"></span> Danest IT Consult. All rights reserved.</div></footer>
+<footer><div class="w">© <span id="yr"></span> Danest IT Consult. All rights reserved. We count anonymous visits to improve this site.</div></footer>
 </main>
 <a class="wa" id="wafab" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 
@@ -159,7 +159,8 @@ footer{margin-top:72px;padding:28px 0;border-top:1px solid var(--b);color:var(--
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,addDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,addDoc,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getAnalytics} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
 /* FIREBASE CONFIG */
 const firebaseConfig={
@@ -168,17 +169,19 @@ const firebaseConfig={
   projectId:"danest-site",
   storageBucket:"danest-site.firebasestorage.app",
   messagingSenderId:"108215431716",
-  appId:"1:108215431716:web:db6e4abe6d4d7fcce0deb1"
+  appId:"1:108215431716:web:db6e4abe6d4d7fcce0deb1",
+  measurementId:"G-V5VGF03ND8"
 };
 const ADMIN_EMAIL="danestitconsult@gmail.com";
 
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+try{getAnalytics(app)}catch(e){}
 const $=i=>document.getElementById(i);
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
-const data={tasks:[],projects:[],leads:[],tests:[],site:{}};
+const data={tasks:[],projects:[],leads:[],tests:[],visits:[],site:{}};
 const COL={tasks:"tasks",projects:"projects",leads:"leads",tests:"testimonials"};
-const T={ov:"Overview",tasks:"Daily tasks",projects:"Projects",leads:"Clients & leads",tests:"Testimonials",site:"Site details"};
+const T={ov:"Overview",visits:"Visitors",tasks:"Daily tasks",projects:"Projects",leads:"Clients & leads",tests:"Testimonials",site:"Site details"};
 const STAGES=["New","Contacted","Proposal","Won","Lost"],CATS=["Web","Mobile","Desktop","Other"];
 let tab="ov",isMgr=false,subs=[],filter="All",cur=null,idx=0,imgTarget=null;
 $("yr").textContent=new Date().getFullYear();
@@ -243,6 +246,20 @@ function renderAdm(){
   const open=data.tasks.filter(t=>!t.done).length,nl=data.leads.filter(l=>l.s==="New").length,won=data.leads.filter(l=>l.s==="Won").length;
   h=`<div class="kpi"><div class="stat"><b>${open}</b><span>Open tasks</span></div><div class="stat"><b>${nl}</b><span>New leads</span></div><div class="stat"><b>${won}</b><span>Won clients</span></div><div class="stat"><b>${data.projects.filter(x=>x.live).length}/${data.projects.length}</b><span>Projects live</span></div></div><h3>Latest enquiries</h3>`;
   h+=[...data.leads].sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,4).map(x=>`<div class="row"><div><b>${esc(x.n)}</b> · ${esc(x.s)}<small>${esc(x.c)}</small><small>${esc(x.m)}</small></div></div>`).join("")||'<p class="note">No leads yet.</p>';
+ }else if(tab==="visits"){
+  const V=data.visits,day=864e5,d0=new Date();d0.setHours(0,0,0,0);const t0=d0.getTime();
+  const inR=n=>V.filter(v=>v.at>=t0-(n-1)*day);
+  const uniq=a=>new Set(a.map(v=>v.vid)).size;
+  const days=[...Array(14)].map((_,i)=>{const s=t0-(13-i)*day;return{s,c:V.filter(v=>v.at>=s&&v.at<s+day).length}});
+  const mx=Math.max(1,...days.map(d=>d.c));
+  const cnt=f=>{const m={};V.forEach(v=>{const k=f(v);m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,6)};
+  const list=a=>a.map(([k,n])=>`<div class="row" style="padding:6px 12px"><span>${esc(k)}</span><b>${n}</b></div>`).join("")||'<p class="note">No data yet.</p>';
+  const bars=days.map(d=>`<div title="${new Date(d.s).toLocaleDateString()}: ${d.c}" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:10px;color:var(--m)">${d.c||""}<div style="width:100%;height:${Math.max(3,d.c/mx*80)}px;background:linear-gradient(var(--a),var(--a2));border-radius:4px 4px 0 0"></div></div>`).join("");
+  h=`<div class="kpi"><div class="stat"><b>${inR(1).length}</b><span>Visits today</span></div><div class="stat"><b>${inR(7).length}</b><span>Last 7 days</span></div><div class="stat"><b>${uniq(inR(30))}</b><span>Unique visitors (30 days)</span></div><div class="stat"><b>${V.length}</b><span>Total recorded</span></div></div>`;
+  h+=`<div class="card" style="margin-bottom:12px"><b>Visits, last 14 days</b><div style="display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:10px">${bars}</div></div>`;
+  h+=`<div class="grid"><div><b>Devices</b>${list(cnt(v=>v.dev||"Unknown"))}</div><div><b>Where they came from</b>${list(cnt(v=>v.ref||"Direct"))}</div><div><b>Time zones</b>${list(cnt(v=>v.tz||"Unknown"))}</div></div><h3>Recent visits</h3>`;
+  h+=V.slice(0,15).map(v=>`<div class="row"><div><b>${new Date(v.at).toLocaleString()}</b><small>${esc(v.dev)} · ${esc(v.ref||"Direct")} · ${esc(v.lang||"")} · ${esc(v.tz||"")}</small></div></div>`).join("")||'<p class="note">No visits recorded yet.</p>';
+  h+='<p class="note">Visits are anonymous (no names or IP addresses). Showing the most recent 1,000. For country and city, open Analytics in the Firebase console.</p>';
  }else if(tab==="tasks"){
   h=form([{k:"n",p:"New task"},{k:"d",p:"Due date (optional)"}],"Add task");
   h+=[...data.tasks].sort((a,b)=>(a.done?1:0)-(b.done?1:0)).map(t=>`<div class="row ${t.done?"done":""}"><div><b>${esc(t.n)}</b><small>${esc(t.d||"")}</small></div><div class="acts"><button data-a="tog" data-id="${t.id}">${t.done?"Reopen":"Done"}</button><button class="g" data-a="del" data-id="${t.id}">×</button></div></div>`).join("")||'<p class="note">No tasks yet.</p>';
@@ -313,10 +330,23 @@ $("l_b").onclick=async()=>{
  try{await signInWithEmailAndPassword(auth,$("l_e").value.trim(),$("l_p").value);$("l_s").textContent=""}
  catch(e){$("l_s").textContent="Sign-in failed ("+(e.code||e.message)+")"}
 };
+let tracked=false;
+function track(){
+ try{
+  if(sessionStorage.getItem("dv"))return;sessionStorage.setItem("dv","1");
+  let vid=localStorage.getItem("dvid");if(!vid){vid=uid();localStorage.setItem("dvid",vid)}
+  const ua=navigator.userAgent,dev=/iPad|Tablet/i.test(ua)?"Tablet":/Mobi|Android|iPhone/i.test(ua)?"Mobile":"Desktop";
+  let ref="";try{ref=document.referrer?new URL(document.referrer).hostname:""}catch(e){}
+  if(ref===location.hostname)ref="";
+  addDoc(collection(db,"visits"),{at:Date.now(),vid,dev,ref:ref.slice(0,100),lang:(navigator.language||"").slice(0,20),tz:(Intl.DateTimeFormat().resolvedOptions().timeZone||"").slice(0,60)}).catch(()=>{});
+ }catch(e){}
+}
 onAuthStateChanged(auth,u=>{
  isMgr=!!u&&u.email===ADMIN_EMAIL;subs.forEach(f=>f());subs=[];
+ if(!tracked){tracked=true;if(!isMgr)track()}
  if(isMgr){$("mb").textContent="Manager";
-  ["tasks","leads"].forEach(c=>subs.push(onSnapshot(collection(db,c),mapSnap(c),()=>{})));view("adm")}
+  ["tasks","leads"].forEach(c=>subs.push(onSnapshot(collection(db,c),mapSnap(c),()=>{})));
+  subs.push(onSnapshot(query(collection(db,"visits"),orderBy("at","desc"),limit(1000)),mapSnap("visits"),()=>{}));view("adm")}
  else{$("mb").textContent="Manager login";view("site");if(u)signOut(auth)}
 });
 
