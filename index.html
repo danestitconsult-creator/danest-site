@@ -369,9 +369,11 @@ onAuthStateChanged(auth,u=>{
 $("q_b").onclick=async()=>{
  const n=$("q_n").value.trim(),c=$("q_c").value.trim(),m=$("q_m").value.trim();
  if(!n||!c){$("q_s").textContent="Please add your name and contact.";return}
- try{await addDoc(collection(db,"leads"),{n,c,m,s:"New",at:Date.now()});
+ $("q_s").textContent="Sending…";$("q_b").disabled=true;
+ try{await Promise.race([addDoc(collection(db,"leads"),{n,c,m,s:"New",at:Date.now()}),new Promise((_,rj)=>setTimeout(()=>rj({code:"timeout"}),12000))]);
   $("q_n").value=$("q_c").value=$("q_m").value="";$("q_s").textContent="Thank you! We will be in touch."}
- catch(e){$("q_s").textContent="Could not send. Please try again."}
+ catch(e){$("q_s").textContent="Could not send ("+(e.code||e.message)+"). Please try again."}
+ $("q_b").disabled=false;
 };
 if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
