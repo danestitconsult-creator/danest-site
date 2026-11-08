@@ -117,6 +117,7 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 .bb.bt>div{background:var(--bg);border:1px solid var(--b);border-top-left-radius:4px}.bb.me{align-self:flex-end}.bb.me>div{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border-top-right-radius:4px}
 .av{flex:none;width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--b);display:grid;place-items:center}
 .qctl{display:grid;gap:8px;margin-top:12px}.qo{text-align:left;white-space:normal;height:auto}.qb{color:var(--a);font-weight:700}
+.mi.lk{opacity:.65}
 .ok2{border-color:#14803c!important;background:color-mix(in srgb,#14803c 10%,var(--s))}
 .lk{background:none;border:0;color:var(--a);padding:0;min-height:0;box-shadow:none;text-decoration:underline;font-weight:600}
 </style>
@@ -179,7 +180,7 @@ function loadMats(id){
  if(!id||!user)return;
  const qc=[where("course","==",id)];if(!active())qc.push(where("free","==",true));
  matUn=onSnapshot(query(collection(db,"materials"),...qc),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;
-  if(isMgr){const c=S.courses.find(x=>x.id===id);if(c&&c.n!==S.mats.length)setDoc(doc(db,"courses",id),{n:S.mats.length},{merge:true}).catch(()=>{})}
+  if(isMgr){const c=S.courses.find(x=>x.id===id),ol=S.mats.map(x=>({id:x.id,t:x.title,k:x.k,f:!!x.free}));if(c&&(c.n!==S.mats.length||JSON.stringify(c.ol||[])!==JSON.stringify(ol)))setDoc(doc(db,"courses",id),{n:S.mats.length,ol},{merge:true}).catch(()=>{})}
   render()},e=>{locked=e.code==="permission-denied";render()});
 }
 $("ab").onclick=()=>{if(user)signOut(auth);else{mode="signin";msg="";courseId=null;render(true)}};
@@ -246,22 +247,30 @@ function courseView(){
  const c=S.courses.find(x=>x.id===courseId)||{},m=S.mats,ac=active(),dn=m.filter(x=>S.prog[x.id]).length,tot=ac?m.length:(c.n||m.length),pc=tot?Math.round(dn/tot*100):0;
  let h=`<div class="ch" style="background:${grad(c.title)}"><button class="g" id="bk">← All courses</button><h1>${EM[hs(c.title)]} ${esc(c.title)}</h1><p>${esc(c.desc)}</p><div class="bar"><i id="pbf" style="width:${pc}%"></i></div><small id="pbl">${dn} of ${tot} lessons complete · ${pc}%</small></div>`;
  if(locked)return h+`<div class="card">Your subscription has expired. Please renew to continue.</div>`;
- const more=Math.max(0,(c.n||0)-m.length),up=ac?"":`<div class="card" style="margin-top:12px;text-align:center"><div style="font-size:34px">🔒</div><b>${more?more+" more lesson"+(more>1?"s":""):"More lessons"} unlock with a subscription</b><p class="note">Enjoy the free lesson, then subscribe to continue.</p><button id="sub">Subscribe to unlock</button></div>`;
- if(!m.length)return h+(ac?'<p class="note">No materials in this course yet.</p>':'<p class="note">This course has no free lesson yet.</p>')+up;
- return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio",quiz:"Quiz"}[x.k]||""}${x.k==="quiz"?`<span class="qb">${bestTxt(x.id)}</span>`:""}${x.free?" · 🎁 Free":""}</div></div></div>`).join("")+up+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
+ const more=Math.max(0,(c.n||0)-m.length),up=ac?"":`<div class="card" style="margin-top:12px;text-align:center"><div style="font-size:34px">🔒</div><b>Subscribe to unlock ${more?more+" more lesson"+(more>1?"s":""):"more lessons"}, including quizzes</b><p class="note">Enjoy the free lesson, then subscribe to continue.</p><button id="sub">Subscribe to unlock</button></div>`;
+ if(!m.length&&!(!ac&&c.ol&&c.ol.length))return h+(ac?'<p class="note">No materials in this course yet.</p>':'<p class="note">This course has no free lesson yet.</p>')+up;
+ return h+`<div class="cl"><div class="ls">`+lessonItems(c,m,ac)+up+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
 }
+function lessonItems(c,m,ac){
+ const lab={note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio",quiz:"Quiz"},
+  items=!ac&&c.ol&&c.ol.length?c.ol:m.map(x=>({id:x.id,t:x.title,k:x.k}));
+ return items.map((o,i)=>{const x=m.find(y=>y.id===o.id);
+  if(!x)return `<div class="mi lk" data-i="${i+1}"><span class="no">🔒</span><div><b>${esc(o.t)}</b><div class="note">${ICON[o.k]||"📄"} ${lab[o.k]||""} · Subscribe to unlock</div></div></div>`;
+  return `<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}" data-i="${i+1}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${lab[x.k]||""}${x.k==="quiz"?`<span class="qb">${bestTxt(x.id)}</span>`:""}${x.free?" · 🎁 Free":""}</div></div></div>`}).join("")}
+const goSub=()=>{courseId=null;matId=null;stopViewer();loadMats(null);render();scrollTo(0,0)};
 function selMat(id){matId=id;document.querySelectorAll(".mi").forEach(e=>e.classList.toggle("on",e.dataset.m===id));showMat(S.mats.find(x=>x.id===id));if(innerWidth<=900)$("vh").scrollIntoView({behavior:"smooth"})}
 function bindCourse(){
  $("bk").onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(isMgr?S.cur:null);render();scrollTo(0,0)};
- document.querySelectorAll(".mi").forEach(e=>e.onclick=()=>selMat(e.dataset.m));
- const sb=$("sub");if(sb)sb.onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(null);render();scrollTo(0,0)};
+ document.querySelectorAll(".mi:not(.lk)").forEach(e=>e.onclick=()=>selMat(e.dataset.m));
+ document.querySelectorAll(".mi.lk").forEach(e=>e.onclick=()=>{$("vh").innerHTML='<div class="card" style="text-align:center"><div style="font-size:40px">🔒</div><b>This lesson is for subscribers</b><p class="note">Subscribe to unlock every lesson and quiz in this course.</p><button id="sub2">Subscribe to unlock</button></div>';$("sub2").onclick=goSub;if(innerWidth<=900)$("vh").scrollIntoView({behavior:"smooth"})});
+ const sb=$("sub");if(sb)sb.onclick=goSub;
  if(matId)showMat(S.mats.find(x=>x.id===matId));
 }
 function refreshProg(){
  if(!(courseId&&$("pbf")))return render();
  const m=S.mats,dn=m.filter(x=>S.prog[x.id]).length,pc=m.length?Math.round(dn/m.length*100):0;
  $("pbf").style.width=pc+"%";$("pbl").textContent=`${dn} of ${m.length} lessons complete · ${pc}%`;
- document.querySelectorAll(".mi").forEach((e,i)=>{const d=!!S.prog[e.dataset.m];e.classList.toggle("dn",d);e.querySelector(".no").textContent=d?"✓":i+1});
+ document.querySelectorAll(".mi:not(.lk)").forEach(e=>{const d=!!S.prog[e.dataset.m];e.classList.toggle("dn",d);e.querySelector(".no").textContent=d?"✓":e.dataset.i});
  const b=$("dn");if(b&&curMat){const d=!!S.prog[curMat.id];b.textContent=d?"✓ Completed":"Mark as complete";b.classList.toggle("g",d)}
 }
 let curMat=null;
