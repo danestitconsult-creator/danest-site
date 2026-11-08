@@ -16,3 +16,12 @@
 1. Open pwabuilder.com and enter your live GitHub Pages URL.
 2. Fix any warnings it shows, then Package for Stores (Android, Windows, iOS).
 3. Android: PWABuilder generates a signing key. Keep it safe.
+
+## 4. Learning platform (learn.html)
+1. Firebase > Storage > Get started (needs the Blaze plan on new projects; set a budget alert). Paste `storage.rules` in the Storage Rules tab and Publish.
+2. Firestore > Rules: paste the updated `firestore.rules` and Publish.
+3. Open `learn.html`, sign in with the admin email, and use the Facilitator dashboard:
+   - Subscription settings: set price, days of access, payment link/MoMo instructions.
+   - Courses & materials: add a course, add lessons (video/slides link, uploaded PDF/image/audio/video, or written lesson), then Publish the course.
+   - Payments: approve a learner's payment reference to activate their access. Learners tab can also grant or revoke days manually.
+4. Export PowerPoint decks to PDF before uploading; they display slide-by-slide inside the site.

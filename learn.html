@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Danest Learning</title>
+<meta name="theme-color" content="#1d5fd1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{--bg:#fff;--s:#f4f7fc;--t:#0f1b2d;--m:#5a6b82;--a:#1d5fd1;--a2:#7c3aed;--b:#e0e7f2;--sh:0 8px 28px rgba(20,40,90,.10)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b121d;--s:#131d2c;--t:#eaf0fa;--m:#9aa9bf;--a:#6aa0ff;--a2:#a78bfa;--b:#24334a;--sh:0 8px 28px rgba(0,0,0,.4)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--t);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1040px;margin:0 auto;padding:0 20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+header{position:-webkit-sticky;position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);background:var(--bg);background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--b);z-index:20}
+header .w{display:flex;justify-content:space-between;align-items:center;height:60px;gap:12px}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:18px;display:flex;align-items:center;gap:8px}
+.logo i{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--a),var(--a2));display:inline-grid;place-items:center;color:#fff;font-style:normal;font-size:15px}
+.logo span{background:linear-gradient(90deg,var(--a),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:18px;font-size:14px}nav a{color:var(--m);text-decoration:none}nav a:hover{color:var(--a)}
+@media(max-width:760px){nav{display:none}}
+button,.btn{-webkit-appearance:none;appearance:none;touch-action:manipulation;min-height:42px;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s,box-shadow .15s}
+@media(hover:hover){button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(60,80,200,.3)}}
+button.g,.btn.g{background:var(--s);color:var(--t);border:1px solid var(--b)}
+.hero{padding:72px 0 56px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;top:-40%;right:-20%;width:560px;height:560px;background:radial-gradient(closest-side,rgba(124,58,237,.22),transparent);z-index:-1}
+.hero:after{content:"";position:absolute;bottom:-30%;left:-15%;width:480px;height:480px;background:radial-gradient(closest-side,rgba(29,95,209,.2),transparent);z-index:-1}
+.pill{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;background:var(--s);border:1px solid var(--b);color:var(--m);margin-bottom:16px}
+.hero h1{font-size:clamp(32px,7vw,56px);line-height:1.08;margin:0 0 16px;letter-spacing:-.035em;max-width:720px;animation:up .7s both}
+.hero p{color:var(--m);max-width:580px;margin:0 0 24px;font-size:18px;animation:up .7s .1s both}
+.hero .cta{display:flex;gap:10px;flex-wrap:wrap;animation:up .7s .2s both}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:36px}
+.stat{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:14px 16px}.stat b{display:block;font-size:24px}.stat span{color:var(--m);font-size:13px}
+h2.sec{font-size:clamp(24px,4vw,32px);margin:64px 0 6px;letter-spacing:-.02em}.sub{color:var(--m);margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:18px;transition:transform .2s,box-shadow .2s}
+@media(hover:hover){.card.h:hover{transform:translateY(-4px);box-shadow:var(--sh)}}
+.card h3{margin:8px 0 6px;font-size:17px}.card p{margin:0;color:var(--m);font-size:14px}
+.ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:21px;background:linear-gradient(135deg,rgba(29,95,209,.15),rgba(124,58,237,.18))}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{background:var(--s);color:var(--t);border:1px solid var(--b);padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500}.chip.on{background:var(--a);color:#fff;border-color:var(--a)}
+.pc{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+@media(hover:hover){.pc:hover{transform:translateY(-4px);box-shadow:var(--sh)}}
+.pi{aspect-ratio:16/10;background:linear-gradient(135deg,rgba(29,95,209,.2),rgba(124,58,237,.25));display:grid;place-items:center;font-size:38px;overflow:hidden}
+@supports not (aspect-ratio:1){.pi{height:190px}}
+.pi img{width:100%;height:100%;object-fit:cover;object-position:top}
+.pb{padding:14px 16px}.pb h3{margin:6px 0 4px;font-size:17px}.pb p{margin:0;color:var(--m);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--a)}
+.step b{font-size:13px;color:var(--a)}
+.quote p{font-style:italic;color:var(--t);font-size:15px}.quote small{display:block;margin-top:10px;color:var(--m)}
+details{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:12px 16px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}details p{color:var(--m);margin:8px 0 0;font-size:15px}
+.cbox{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:760px){.cbox{grid-template-columns:1fr}}
+input,textarea{-webkit-appearance:none;appearance:none}
+input,select,textarea{width:100%;background:var(--bg);color:var(--t);border:1px solid var(--b);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;margin-bottom:8px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--a);outline-offset:0}
+footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));border-top:1px solid var(--b);color:var(--m);font-size:14px}
+.wa{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));background:#25d366;color:#fff;width:54px;height:54px;border-radius:50%;display:none;place-items:center;font-size:26px;text-decoration:none;box-shadow:var(--sh);z-index:15}
+#lb{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(5,10,20,.85);display:none;z-index:50;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:max(20px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom))}
+#lb .in{max-width:880px;margin:0 auto;background:var(--bg);border-radius:16px;padding:16px;position:relative}
+#lb .big{width:100%;border-radius:10px;border:1px solid var(--b);max-height:70vh;object-fit:contain;background:var(--s)}
+#lb .th{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}#lb .th img{width:72px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent}#lb .th img.on{border-color:var(--a)}
+#lb .x{position:absolute;right:12px;top:12px;padding:6px 12px}
+#adm,#login{display:none;padding:20px 0 40px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.tabs button{background:var(--s);color:var(--t);border:1px solid var(--b);box-shadow:none}.tabs button.on{background:var(--a);color:#fff}
+.row{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;background:var(--s);border:1px solid var(--b);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.row small{color:var(--m);display:block;overflow-wrap:anywhere}.row.done b{text-decoration:line-through;opacity:.6}
+.acts{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}.acts button,.acts select{padding:5px 9px;font-size:12px;width:auto;margin:0;min-height:36px}
+@media(max-width:760px){.acts select{font-size:16px}}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.thumbs div{position:relative}.thumbs img{width:64px;height:44px;object-fit:cover;border-radius:6px;display:block}
+.thumbs button{position:absolute;top:-6px;right:-6px;padding:0;width:18px;height:18px;border-radius:50%;font-size:11px;line-height:18px;background:#d33}
+.note{color:var(--m);font-size:13px}
+.row a{color:var(--a)}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.kpi .stat b{font-size:28px}
+.pg{padding:28px 0 40px}.pg h1{font-size:clamp(26px,5vw,38px);line-height:1.15;margin:0 0 8px;letter-spacing:-.02em}
+.cc{cursor:pointer}.cc h3{margin:6px 0}.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--s);border:1px solid var(--b);color:var(--m)}.badge.ok{color:#14803c;border-color:#14803c}
+.mi{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--b);border-radius:12px;background:var(--s);margin-bottom:8px;cursor:pointer}.mi.on{border-color:var(--a)}.mi i{font-style:normal;font-size:22px}
+.vw{position:relative;border:1px solid var(--b);border-radius:14px;background:var(--s);overflow:hidden;margin:14px 0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.vw iframe,.vw video{width:100%;border:0;display:block;aspect-ratio:16/9;background:#000}.vw audio{width:100%;display:block;padding:12px}.vw img.im{width:100%;display:block}
+.vw canvas{width:100%;display:block;margin:0 0 6px;background:#fff}.vw .nt{padding:16px 18px}.vw .nt h3{margin:14px 0 4px}
+.pgs{max-height:78vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.13;font-size:13px;font-weight:700;color:#888;transform:rotate(-24deg) scale(1.6);line-height:90px;word-spacing:50px;z-index:3}
+@media print{.vw{display:none!important}body:after{content:"Printing is disabled for course materials.";display:block;padding:40px}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+#adm,#auth,#pay{display:none}
+.lk{background:none;border:0;color:var(--a);padding:0;min-height:0;box-shadow:none;text-decoration:underline;font-weight:600}
+</style>
+</head>
+<body>
+<header><div class="w"><div class="logo"><i>D</i>Danest <span>Learning</span></div>
+<span style="display:flex;gap:8px"><a class="btn g" href="index.html">Main site</a><button class="g" id="ab" style="display:none">Sign in</button></span></div></header>
+<main class="w pg" id="app"></main>
+<footer><div class="w">© <span id="yr"></span> Danest IT Consult. Course materials are for enrolled learners only and may not be copied or shared.</div></footer>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {initializeAuth,indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,updateProfile,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {initializeFirestore,collection,doc,setDoc,deleteDoc,onSnapshot,addDoc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getStorage,ref,uploadBytesResumable,getBytes,deleteObject} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig={apiKey:"AIzaSyC9Ceq3v4SbqGqFUNWCOx8u9dCHrZQiHMU",authDomain:"danest-site.firebaseapp.com",projectId:"danest-site",storageBucket:"danest-site.firebasestorage.app",messagingSenderId:"108215431716",appId:"1:108215431716:web:db6e4abe6d4d7fcce0deb1"};
+const ADMIN_EMAIL="danestitconsult@gmail.com",MAXMB=50,DAY=864e5;
+const app=initializeApp(firebaseConfig),auth=initializeAuth(app,{persistence:[indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence]}),db=initializeFirestore(app,{experimentalAutoDetectLongPolling:true}),st=getStorage(app);
+const $=i=>document.getElementById(i),esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
+$("yr").textContent=new Date().getFullYear();
+
+let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
+let courseId=null,matId=null,mode="signin",tab="courses",locked=false,msg="";
+const ICON={note:"📝",embed:"🎞️",pdf:"📊",image:"🖼️",video:"🎬",audio:"🎧"};
+const active=()=>isMgr||(S.sub&&S.sub.until>Date.now());
+const fmt=t=>new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+const listen=(q,fn,err)=>unsubs.push(onSnapshot(q,s=>fn(s.docs.map(d=>({id:d.id,...d.data()}))),err||(e=>console.warn(e.code))));
+
+/* ---------- auth state ---------- */
+onAuthStateChanged(auth,u=>{
+ user=u;isMgr=!!u&&u.email===ADMIN_EMAIL;unsubs.forEach(f=>f());unsubs=[];
+ S.sub=null;S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
+ if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
+ $("ab").style.display="";$("ab").textContent=u?"Sign out":"Sign in";
+ listen(collection(db,"courses"),r=>{S.courses=r.sort((a,b)=>(a.at||0)-(b.at||0));render()});
+ unsubs.push(onSnapshot(doc(db,"site","learn"),s=>{S.cfg=s.exists()?s.data():{};render()},()=>{}));
+ if(u&&!isMgr){
+  unsubs.push(onSnapshot(doc(db,"subs",u.uid),s=>{S.sub=s.exists()?s.data():null;render()},e=>console.warn(e.code)));
+  listen(query(collection(db,"payments"),where("uid","==",u.uid)),r=>{S.pays=r;render()});
+  if(u.displayName)setDoc(doc(db,"learners",u.uid),{n:u.displayName,e:u.email,at:Date.now()}).catch(()=>{});
+ }
+ if(isMgr){
+  listen(collection(db,"learners"),r=>{S.learners=r;render()});
+  listen(collection(db,"subs"),r=>{S.allSubs=r;render()});
+  listen(collection(db,"payments"),r=>{S.allPays=r;render()});
+ }
+ if(courseId)loadMats(courseId);render();
+});
+let matUn=null;
+function loadMats(id){
+ if(matUn){matUn();matUn=null}S.mats=[];locked=false;
+ if(!id||!active())return;
+ matUn=onSnapshot(query(collection(db,"materials"),where("course","==",id)),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;render()},e=>{locked=e.code==="permission-denied";render()});
+}
+$("ab").onclick=()=>{if(user)signOut(auth);else{mode="signin";msg="";courseId=null;render(true)}};
+
+/* ---------- views ---------- */
+let showAuth=false;
+function render(forceAuth){
+ if(forceAuth===true)showAuth=true;
+ if(user)showAuth=false;
+ const a=$("app");if(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!forceAuth)return;
+ if(courseId&&matId&&$("vw")&&forceAuth!==true)return;
+ stopViewer();
+ if(showAuth&&!user){a.innerHTML=authView();bindAuth();return}
+ if(courseId){a.innerHTML=courseView();bindCourse();return}
+ if(isMgr){a.innerHTML=adminView();bindAdmin();return}
+ a.innerHTML=homeView();bindHome();
+}
+function homeView(){
+ const c=S.courses.filter(x=>x.live);
+ let h=`<h1>Learn with Danest</h1><p class="sub">Practical IT and software training from your facilitator. Subscribe once and access every course, slide deck and resource right here on the site.</p>`;
+ if(!user)h+=`<p><button id="go">Sign in or create an account</button></p>`;
+ else if(active())h+=`<p><span class="badge ok">Subscription active until ${fmt(S.sub.until)}</span></p>`;
+ else h+=payView();
+ h+=`<h2 class="sec">Courses</h2><div class="grid">`+(c.map(x=>`<div class="card h cc" data-c="${x.id}"><div class="ic">📚</div><h3>${esc(x.title)}</h3><p>${esc(x.desc)}</p></div>`).join("")||'<p class="note">Courses will appear here soon.</p>')+`</div>`;
+ return h;
+}
+function payView(){
+ const c=S.cfg,pend=S.pays.filter(p=>p.s==="pending"),last=S.sub&&S.sub.until?`<p class="note">Your last subscription ended ${fmt(S.sub.until)}.</p>`:"";
+ return `<div class="card"><h3 style="margin-top:0">Subscribe to unlock all materials</h3>${last}
+ <p><b>${esc(c.price||"Subscription price coming soon")}</b>${c.days?` · ${c.days} days access`:""}</p>
+ <p style="white-space:pre-wrap">${esc(c.instr||"")}</p>
+ ${safe(c.payUrl)?`<p><a class="btn" href="${esc(c.payUrl)}" target="_blank" rel="noopener">Pay now</a></p>`:""}
+ ${pend.length?`<p class="note">✅ Payment reference <b>${esc(pend[0].ref)}</b> received. Your facilitator will activate your access shortly.</p>`:`
+ <p class="note">After paying, enter your payment reference or the MoMo/transaction ID so access can be activated.</p>
+ <input id="pr" placeholder="Payment reference / transaction ID" maxlength="80"><button id="ps">I have paid</button> <span class="note" id="pm"></span>`}</div>`;
+}
+function bindHome(){
+ const g=$("go");if(g)g.onclick=()=>render(true);
+ document.querySelectorAll(".cc").forEach(e=>e.onclick=()=>{if(!user){render(true);return}if(!active()){scrollTo(0,0);return}openCourse(e.dataset.c)});
+ const ps=$("ps");if(ps)ps.onclick=async()=>{const r=$("pr").value.trim();if(r.length<4){$("pm").textContent="Please enter the reference.";return}
+  ps.disabled=true;try{await addDoc(collection(db,"payments"),{uid:user.uid,n:user.displayName||"",e:user.email,ref:r,at:Date.now(),s:"pending"})}catch(e){$("pm").textContent="Could not send. Try again.";ps.disabled=false}};
+}
+function openCourse(id){courseId=id;matId=null;loadMats(id);render()}
+function courseView(){
+ const c=S.courses.find(x=>x.id===courseId)||{};
+ let h=`<p><button class="g" id="bk">← All courses</button></p><h1>${esc(c.title)}</h1><p class="sub">${esc(c.desc)}</p>`;
+ if(locked)return h+`<div class="card">Your subscription has expired. Please renew to continue.</div>`;
+ const m=S.mats;if(!m.length)return h+'<p class="note">No materials in this course yet.</p>';
+ h+=`<div class="two"><div>`+m.map(x=>`<div class="mi ${x.id===matId?"on":""}" data-m="${x.id}"><i>${ICON[x.k]||"📄"}</i><div><b>${esc(x.title)}</b></div></div>`).join("")+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<p class="note">Choose a lesson to begin.</p>'}</div></div>`;
+ return h;
+}
+function bindCourse(){
+ $("bk").onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(isMgr?S.cur:null);render()};
+ document.querySelectorAll(".mi").forEach(e=>e.onclick=()=>{matId=e.dataset.m;document.querySelectorAll(".mi").forEach(x=>x.classList.toggle("on",x===e));showMat(S.mats.find(x=>x.id===matId))});
+ if(matId)showMat(S.mats.find(x=>x.id===matId));
+}
+
+/* ---------- protected viewer ---------- */
+let blobs=[];
+function stopViewer(){blobs.forEach(u=>URL.revokeObjectURL(u));blobs=[]}
+const wm=()=>`<div class="wm">${Array(160).fill(esc(user?user.email:"")).join(" ")}</div>`;
+function wrap(inner){const v=$("vh");if(!v)return;v.innerHTML=`<div class="vw" id="vw">${inner}${wm()}</div><p class="note">Licensed to ${esc(user.email)}. Copying or sharing is not permitted.</p>`;
+ const w=$("vw");["contextmenu","dragstart","copy","cut"].forEach(ev=>w.addEventListener(ev,e=>e.preventDefault()))}
+function embedUrl(u){
+ u=safe(u);if(!u)return"";let m;
+ if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/))return`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1`;
+ if(m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/))return`https://player.vimeo.com/video/${m[1]}`;
+ if(m=u.match(/docs\.google\.com\/presentation\/d\/([\w-]+)/))return`https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false`;
+ if(m=u.match(/drive\.google\.com\/file\/d\/([\w-]+)/))return`https://drive.google.com/file/d/${m[1]}/preview`;
+ return u;
+}
+function note(t){return t.split(/\n/).map(l=>/^# /.test(l)?`<h3>${esc(l.slice(2))}</h3>`:/^- /.test(l)?`<p>• ${esc(l.slice(2))}</p>`:l.trim()?`<p>${esc(l)}</p>`:"").join("")}
+let pdfLib=null;
+function loadPdfJs(){return pdfLib||(pdfLib=new Promise((res,rej)=>{const s=document.createElement("script"),B="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";s.src=B+"pdf.min.js";
+ s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([`importScripts("${B}pdf.worker.min.js")`],{type:"text/javascript"}));res(window.pdfjsLib)};s.onerror=rej;document.head.appendChild(s)}))}
+async function showMat(x){
+ if(!x)return;
+ if(x.k==="note")return wrap(`<div class="nt">${note(x.text||"")}</div>`);
+ if(x.k==="embed")return wrap(`<iframe src="${esc(embedUrl(x.url))}" allowfullscreen allow="fullscreen;autoplay" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`);
+ const v=$("vh");v.innerHTML='<p class="note">Loading material…</p>';
+ try{
+  const buf=await getBytes(ref(st,x.path),MAXMB*1048576);if(matId!==x.id)return;
+  if(x.k==="pdf"){
+   wrap(`<div class="pgs" id="pgs"></div>`);const lib=await loadPdfJs(),pdf=await lib.getDocument({data:buf}).promise,box=$("pgs");
+   for(let i=1;i<=pdf.numPages;i++){const p=await pdf.getPage(i),vp=p.getViewport({scale:Math.min(2,(devicePixelRatio||1)*1.4)}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;box.appendChild(c);await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;if(matId!==x.id)return}
+   return}
+  const url=URL.createObjectURL(new Blob([buf],{type:x.mime||""}));blobs.push(url);
+  if(x.k==="image")wrap(`<img class="im" src="${url}" alt="" draggable="false">`);
+  else if(x.k==="video")wrap(`<video src="${url}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline></video>`);
+  else wrap(`<audio src="${url}" controls controlsList="nodownload"></audio>`);
+ }catch(e){$("vh").innerHTML='<p class="note">Could not load this material. '+(e.code==="storage/unauthorized"?"Your subscription may have expired.":"Check your connection and try again.")+"</p>"}
+}
+
+/* ---------- sign in / up ---------- */
+function authView(){
+ const su=mode==="up";
+ return `<div class="card" style="max-width:440px;margin:0 auto"><h2 style="margin-top:0">${su?"Create your account":"Sign in"}</h2>
+ ${su?'<input id="a_n" placeholder="Full name" autocomplete="name" maxlength="80">':""}
+ <input id="a_e" type="email" placeholder="Email" autocomplete="username" autocapitalize="none" autocorrect="off" inputmode="email">
+ <input id="a_p" type="password" placeholder="Password${su?" (6+ characters)":""}" autocomplete="${su?"new-password":"current-password"}">
+ <button id="a_b">${su?"Sign up":"Sign in"}</button> <button class="g" id="a_x">Cancel</button>
+ <p class="note" id="a_m">${esc(msg)}</p>
+ <p class="note">${su?'Already registered? <button class="lk" id="a_s">Sign in</button>':'New here? <button class="lk" id="a_s">Create an account</button> · <button class="lk" id="a_r">Forgot password</button>'}</p></div>`;
+}
+function bindAuth(){
+ const m=t=>$("a_m").textContent=t,E=()=>$("a_e").value.trim();
+ $("a_x").onclick=()=>{showAuth=false;msg="";render()};
+ $("a_s").onclick=()=>{mode=mode==="up"?"signin":"up";msg="";render(true)};
+ const r=$("a_r");if(r)r.onclick=async()=>{if(!E())return m("Enter your email first.");try{await sendPasswordResetEmail(auth,E());m("Reset link sent. Check your inbox.")}catch(e){m("Could not send reset email.")}};
+ $("a_b").onclick=async()=>{const p=$("a_p").value;if(!E()||!p)return m("Enter your email and password.");$("a_b").disabled=true;m("Please wait…");
+  try{
+   if(mode==="up"){const n=$("a_n").value.trim();if(!n){m("Please enter your name.");$("a_b").disabled=false;return}
+    const c=await createUserWithEmailAndPassword(auth,E(),p);await updateProfile(c.user,{displayName:n});await setDoc(doc(db,"learners",c.user.uid),{n,e:c.user.email,at:Date.now()}).catch(()=>{})}
+   else await signInWithEmailAndPassword(auth,E(),p);
+  }catch(e){const c=e.code||"";m(/email-already/.test(c)?"That email is already registered. Sign in instead.":/weak/.test(c)?"Password must be at least 6 characters.":/invalid-email/.test(c)?"Please check your email address.":/too-many/.test(c)?"Too many attempts. Try again later.":/invalid|wrong|user-not/.test(c)?"Email or password is incorrect.":"Something went wrong. Try again.");$("a_b").disabled=false}};
+}
+
+/* ---------- facilitator dashboard ---------- */
+const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",set:"Subscription settings"};
+function adminView(){
+ const pend=S.allPays.filter(p=>p.s==="pending").length;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">Facilitator dashboard</h2><button class="g" id="pv">Preview as learner</button></div>
+ <div class="tabs">`+Object.keys(TABS).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${TABS[k]}${k==="pays"&&pend?` (${pend})`:""}</button>`).join("")+`</div>`;
+ if(tab==="courses"){
+  h+=`<div class="card"><h3 style="margin-top:0">New course</h3><input id="c_t" placeholder="Course title" maxlength="100"><textarea id="c_d" rows="2" placeholder="Short description"></textarea><button id="c_a">Add course</button></div>`;
+  h+=S.courses.map(c=>`<div class="row"><div><b>${esc(c.title)}</b> <span class="note">· ${c.live?"Published":"Hidden"}</span><small>${esc(c.desc)}</small></div><div class="acts"><button data-a="open" data-id="${c.id}">Materials</button><button class="g" data-a="live" data-id="${c.id}">${c.live?"Hide":"Publish"}</button><button class="g" data-a="delc" data-id="${c.id}">×</button></div></div>`).join("");
+  if(S.cur)h+=matAdmin();
+ }
+ if(tab==="subs")h+=S.learners.sort((a,b)=>(b.at||0)-(a.at||0)).map(l=>{const s=S.allSubs.find(x=>x.id===l.id),on=s&&s.until>Date.now();
+  return `<div class="row"><div><b>${esc(l.n||"(no name)")}</b><small>${esc(l.e)}</small><small>${on?"Active until "+fmt(s.until):s&&s.until?"Expired "+fmt(s.until):"No subscription"}</small></div><div class="acts"><button data-a="grant" data-id="${l.id}">+${S.cfg.days||30} days</button><button class="g" data-a="revoke" data-id="${l.id}">Revoke</button></div></div>`}).join("")||'<p class="note">No learners yet.</p>';
+ if(tab==="pays")h+=[...S.allPays].sort((a,b)=>(b.at||0)-(a.at||0)).map(p=>`<div class="row"><div><b>${esc(p.n||p.e)}</b> <span class="note">· ${esc(p.s)}</span><small>${esc(p.e)}</small><small>Ref: ${esc(p.ref)} · ${fmt(p.at)}</small></div><div class="acts">${p.s==="pending"?`<button data-a="approve" data-id="${p.id}">Approve</button><button class="g" data-a="reject" data-id="${p.id}">Reject</button>`:`<button class="g" data-a="delp" data-id="${p.id}">×</button>`}</div></div>`).join("")||'<p class="note">No payments yet.</p>';
+ if(tab==="set"){const c=S.cfg;h+=`<div class="card"><input id="s_p" placeholder="Price shown to learners, e.g. GHS 150 per month" value="${esc(c.price)}"><input id="s_d" type="number" inputmode="numeric" placeholder="Days of access per payment" value="${esc(c.days||30)}"><input id="s_u" placeholder="Payment link (Paystack payment page, optional)" value="${esc(c.payUrl)}"><textarea id="s_i" rows="4" placeholder="Payment instructions, e.g. MoMo number and name">${esc(c.instr)}</textarea><button id="s_b">Save settings</button> <span class="note" id="s_m"></span></div>`}
+ return h;
+}
+function matAdmin(){
+ const c=S.courses.find(x=>x.id===S.cur);if(!c)return"";
+ return `<h3>Materials: ${esc(c.title)}</h3><div class="card"><input id="m_t" placeholder="Lesson title" maxlength="120">
+ <select id="m_k"><option value="embed">Video or slides link (YouTube, Vimeo, Google Slides, Drive)</option><option value="file">Upload file (PDF slides, image, audio, short video)</option><option value="note">Written lesson</option></select>
+ <div id="m_f"></div><button id="m_a">Add material</button> <span class="note" id="m_s"></span></div>`
+ +S.mats.map(x=>`<div class="row"><div><b>${ICON[x.k]||"📄"} ${esc(x.title)}</b><small>${esc(x.path||x.url||"")}</small></div><div class="acts"><button class="g" data-a="delm" data-id="${x.id}">×</button></div></div>`).join("");
+}
+function matFields(){const k=$("m_k").value;$("m_f").innerHTML=k==="embed"?'<input id="m_u" placeholder="https:// link to video or slides">':k==="note"?'<textarea id="m_x" rows="6" placeholder="Lesson text. Start a line with # for a heading or - for a bullet."></textarea>':`<input id="m_fl" type="file" accept="application/pdf,image/*,audio/*,video/mp4,video/webm"><p class="note">Max ${MAXMB} MB. Export PowerPoint decks to PDF first. Use YouTube/Vimeo (unlisted) for long videos.</p>`}
+const kindOf=t=>t==="application/pdf"?"pdf":t.startsWith("image/")?"image":t.startsWith("video/")?"video":t.startsWith("audio/")?"audio":"";
+function bindAdmin(){
+ $("pv").onclick=()=>{const c=S.courses.find(x=>x.id===S.cur)||S.courses[0];if(c)openCourse(c.id);else alert("Add a course first.")};
+ document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;S.cur=null;loadMats(null);render()});
+ const val=i=>$(i).value.trim();
+ if(tab==="courses"){
+  $("c_a").onclick=async()=>{if(!val("c_t"))return;await addDoc(collection(db,"courses"),{title:val("c_t"),desc:val("c_d"),live:false,at:Date.now()})};
+  if(S.cur){matFields();$("m_k").onchange=matFields;$("m_a").onclick=addMat}
+ }
+ if(tab==="set")$("s_b").onclick=async()=>{await setDoc(doc(db,"site","learn"),{price:val("s_p"),days:Math.max(1,+val("s_d")||30),payUrl:safe(val("s_u")),instr:val("s_i")},{merge:true});$("s_m").textContent="Saved ✓"};
+ document.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>act(b.dataset.a,b.dataset.id,b));
+}
+async function addMat(){
+ const k=$("m_k").value,t=$("m_t").value.trim(),s=$("m_s"),b=$("m_a");if(!t){s.textContent="Add a title.";return}
+ const base={course:S.cur,title:t,at:Date.now()};b.disabled=true;
+ try{
+  if(k==="embed"){const u=safe($("m_u").value.trim());if(!u){s.textContent="Enter a valid https link.";b.disabled=false;return}await addDoc(collection(db,"materials"),{...base,k:"embed",url:u})}
+  else if(k==="note"){const x=$("m_x").value.trim();if(!x){s.textContent="Write the lesson text.";b.disabled=false;return}await addDoc(collection(db,"materials"),{...base,k:"note",text:x})}
+  else{const f=$("m_fl").files[0];if(!f){s.textContent="Choose a file.";b.disabled=false;return}const kind=kindOf(f.type);
+   if(!kind||f.size>MAXMB*1048576){s.textContent="Unsupported type or larger than "+MAXMB+" MB.";b.disabled=false;return}
+   const path=`learn/${S.cur}/${Date.now()}-${f.name.replace(/[^\w.\-]/g,"_")}`,task=uploadBytesResumable(ref(st,path),f,{contentType:f.type});
+   await new Promise((res,rej)=>task.on("state_changed",p=>s.textContent="Uploading "+Math.round(p.bytesTransferred/p.totalBytes*100)+"%",rej,res));
+   await addDoc(collection(db,"materials"),{...base,k:kind,path,mime:f.type})}
+  s.textContent="Added ✓";$("m_t").value="";
+ }catch(e){s.textContent=e.code==="storage/unauthorized"?"Upload blocked: publish storage.rules in Firebase.":"Failed: "+(e.code||e.message)}
+ b.disabled=false;
+}
+async function act(a,id){
+ const days=(S.cfg.days||30)*DAY,grant=async(uid,p)=>{const s=S.allSubs.find(x=>x.id===uid),from=Math.max(Date.now(),s&&s.until||0);await setDoc(doc(db,"subs",uid),{until:from+days,n:p?p.n:"",e:p?p.e:""},{merge:true})};
+ if(a==="open"){S.cur=S.cur===id?null:id;loadMats(S.cur);render()}
+ if(a==="live"){const c=S.courses.find(x=>x.id===id);await setDoc(doc(db,"courses",id),{live:!c.live},{merge:true})}
+ if(a==="delc"&&confirm("Delete this course? Its materials will no longer be reachable.")){S.mats.filter(m=>m.course===id).forEach(m=>delMat(m));await deleteDoc(doc(db,"courses",id));S.cur=null;loadMats(null)}
+ if(a==="delm"&&confirm("Delete this material?"))delMat(S.mats.find(x=>x.id===id));
+ if(a==="grant"){const l=S.learners.find(x=>x.id===id);await grant(id,l)}
+ if(a==="revoke"&&confirm("Revoke access now?"))await setDoc(doc(db,"subs",id),{until:0},{merge:true});
+ if(a==="approve"){const p=S.allPays.find(x=>x.id===id);await grant(p.uid,p);await setDoc(doc(db,"payments",id),{s:"approved"},{merge:true})}
+ if(a==="reject")await setDoc(doc(db,"payments",id),{s:"rejected"},{merge:true});
+ if(a==="delp")await deleteDoc(doc(db,"payments",id));
+}
+async function delMat(m){if(!m)return;if(m.path)try{await deleteObject(ref(st,m.path))}catch(e){}await deleteDoc(doc(db,"materials",m.id))}
+</script>
+</body>
+</html>

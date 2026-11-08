@@ -1,0 +1,15 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function admin() { return request.auth != null && request.auth.token.email == 'danestitconsult@gmail.com'; }
+    function paid() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/subs/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/subs/$(request.auth.uid)).data.until > request.time.toMillis();
+    }
+    match /learn/{allPaths=**} {
+      allow read: if admin() || paid();
+      allow write: if admin();
+    }
+  }
+}
