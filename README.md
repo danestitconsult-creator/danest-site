@@ -18,7 +18,7 @@
 3. Android: PWABuilder generates a signing key. Keep it safe.
 
 ## 4. Learning platform (learn.html)
-1. Firebase > Storage > Get started (needs the Blaze plan on new projects; set a budget alert). Paste `storage.rules` in the Storage Rules tab and Publish.
+1. No Firebase Storage needed: uploaded files are kept in Firestore (free tier), max 8 MB each.
 2. Firestore > Rules: paste the updated `firestore.rules` and Publish.
 3. Open `learn.html`, sign in with the admin email, and use the Facilitator dashboard:
    - Subscription settings: set price, days of access, payment link/MoMo instructions.
@@ -26,3 +26,5 @@
    - Payments: approve a learner's payment reference to activate their access. Learners tab can also grant or revoke days manually.
 4. Export PowerPoint decks to PDF before uploading; they display slide-by-slide inside the site.
 5. Payment alerts: when a learner confirms payment you see a banner and a count in the tab title on learn.html, and the learner can notify you in one tap by WhatsApp or email (set your WhatsApp number and email under Site details on the main site).
+6. The first lesson of each course is free to any signed-in learner; the rest need a subscription. Use "Make free / Make paid" on any lesson to change this.
+7. Learners can comment on lessons or message you; reply from the Comments tab.

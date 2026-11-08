@@ -111,6 +111,7 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 .alert{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff7e0;color:#6b4a00;border:1px solid #f0c24b;border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:600}
 @media(prefers-color-scheme:dark){.alert{background:#3a2e08;color:#ffd978;border-color:#7a5d10}}
 .stp{display:flex;gap:6px;margin:0 0 14px}.stp span{flex:1;text-align:center;font-size:12px;font-weight:700;padding:7px 4px;border-radius:99px;background:var(--bg);border:1px solid var(--b);color:var(--m)}.stp span.on{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border-color:transparent}
+.cm{border-top:1px solid var(--b);padding:8px 0}.cm p{margin:2px 0;overflow-wrap:anywhere}.rp{background:var(--bg);border-left:3px solid var(--a);padding:6px 10px;border-radius:6px;font-size:14px;margin-top:4px}.cmb textarea{margin-bottom:8px}
 .ok2{border-color:#14803c!important;background:color-mix(in srgb,#14803c 10%,var(--s))}
 .lk{background:none;border:0;color:var(--a);padding:0;min-height:0;box-shadow:none;text-decoration:underline;font-weight:600}
 </style>
@@ -124,17 +125,16 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {initializeAuth,indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,updateProfile,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {initializeFirestore,collection,doc,setDoc,deleteDoc,onSnapshot,addDoc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {getStorage,ref,uploadBytesResumable,getBytes,deleteObject} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import {initializeFirestore,collection,doc,setDoc,deleteDoc,onSnapshot,addDoc,getDoc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyC9Ceq3v4SbqGqFUNWCOx8u9dCHrZQiHMU",authDomain:"danest-site.firebaseapp.com",projectId:"danest-site",storageBucket:"danest-site.firebasestorage.app",messagingSenderId:"108215431716",appId:"1:108215431716:web:db6e4abe6d4d7fcce0deb1"};
-const ADMIN_EMAIL="danestitconsult@gmail.com",MAXMB=50,DAY=864e5;
-const app=initializeApp(firebaseConfig),auth=initializeAuth(app,{persistence:[indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence]}),db=initializeFirestore(app,{experimentalAutoDetectLongPolling:true}),st=getStorage(app);
+const ADMIN_EMAIL="danestitconsult@gmail.com",MAXMB=8,CH=700000,DAY=864e5;
+const app=initializeApp(firebaseConfig),auth=initializeAuth(app,{persistence:[indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence]}),db=initializeFirestore(app,{experimentalAutoDetectLongPolling:true});
 const $=i=>document.getElementById(i),esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
 $("yr").textContent=new Date().getFullYear();
 
-let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},main:{},prog:{},loaded:false,sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
+let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},main:{},prog:{},cmts:[],loaded:false,sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
 let courseId=null,matId=null,mode="signin",tab="courses",locked=false,msg="";
 const ICON={note:"📝",embed:"🎞️",pdf:"📊",image:"🖼️",video:"🎬",audio:"🎧"};
 const active=()=>isMgr||(S.sub&&S.sub.until>Date.now());
@@ -144,14 +144,15 @@ const listen=(q,fn,err)=>unsubs.push(onSnapshot(q,s=>fn(s.docs.map(d=>({id:d.id,
 /* ---------- auth state ---------- */
 onAuthStateChanged(auth,u=>{
  user=u;isMgr=!!u&&u.email===ADMIN_EMAIL;unsubs.forEach(f=>f());unsubs=[];
- S.sub=null;S.prog={};S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
+ S.sub=null;S.prog={};S.cmts=[];S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
  $("ab").style.display="";$("ab").textContent=u?"Sign out":"Sign in";
  listen(collection(db,"courses"),r=>{S.courses=r.sort((a,b)=>(a.at||0)-(b.at||0));S.loaded=true;render()},()=>{S.loaded=true;render()});
  unsubs.push(onSnapshot(doc(db,"site","main"),s=>{S.main=s.exists()?s.data():{};render()},()=>{}));
  unsubs.push(onSnapshot(doc(db,"site","learn"),s=>{S.cfg=s.exists()?s.data():{};render()},()=>{}));
  if(u&&!isMgr){
-  unsubs.push(onSnapshot(doc(db,"subs",u.uid),s=>{S.sub=s.exists()?s.data():null;render()},e=>console.warn(e.code)));
+  unsubs.push(onSnapshot(doc(db,"subs",u.uid),s=>{S.sub=s.exists()?s.data():null;if(courseId)loadMats(courseId);render()},e=>console.warn(e.code)));
+  listen(query(collection(db,"comments"),where("uid","==",u.uid)),r=>{S.cmts=r;cmtRefresh()});
   listen(query(collection(db,"payments"),where("uid","==",u.uid)),r=>{S.pays=r;render()});
   unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
   if(u.displayName)setDoc(doc(db,"learners",u.uid),{n:u.displayName,e:u.email,at:Date.now()}).catch(()=>{});
@@ -159,6 +160,7 @@ onAuthStateChanged(auth,u=>{
  if(isMgr){
   unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
   listen(collection(db,"learners"),r=>{S.learners=r;render()});
+  listen(collection(db,"comments"),r=>{S.cmts=r;cmtRefresh()});
   listen(collection(db,"subs"),r=>{S.allSubs=r;render()});
   listen(collection(db,"payments"),r=>{S.allPays=r;render()});
  }
@@ -167,8 +169,9 @@ onAuthStateChanged(auth,u=>{
 let matUn=null;
 function loadMats(id){
  if(matUn){matUn();matUn=null}S.mats=[];locked=false;
- if(!id||!active())return;
- matUn=onSnapshot(query(collection(db,"materials"),where("course","==",id)),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;
+ if(!id||!user)return;
+ const qc=[where("course","==",id)];if(!active())qc.push(where("free","==",true));
+ matUn=onSnapshot(query(collection(db,"materials"),...qc),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;
   if(isMgr){const c=S.courses.find(x=>x.id===id);if(c&&c.n!==S.mats.length)setDoc(doc(db,"courses",id),{n:S.mats.length},{merge:true}).catch(()=>{})}
   render()},e=>{locked=e.code==="permission-denied";render()});
 }
@@ -177,7 +180,7 @@ $("ab").onclick=()=>{if(user)signOut(auth);else{mode="signin";msg="";courseId=nu
 /* ---------- views ---------- */
 let showAuth=false;
 function render(forceAuth){
- const pn=S.allPays.filter(p=>p.s==="pending").length;document.title=(isMgr&&pn?`(${pn}) `:"")+"Danest Learning";
+ const pn=S.allPays.filter(p=>p.s==="pending").length+(isMgr?S.cmts.filter(c=>!c.r).length:0);document.title=(isMgr&&pn?`(${pn}) `:"")+"Danest Learning";
  if(forceAuth===true)showAuth=true;
  if(user)showAuth=false;
  const a=$("app");if(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!forceAuth)return;
@@ -195,7 +198,7 @@ const doneIn=id=>Object.values(S.prog).filter(v=>v===id).length;
 function homeView(){
  const c=S.courses.filter(x=>x.live),first=user?(user.displayName||"").split(" ")[0]:"",ac=active(),days=ac&&!isMgr?Math.max(0,Math.ceil((S.sub.until-Date.now())/DAY)):0;
  let h=`<section class="hero2"><div><span class="pill2">🎓 Danest Learning</span><h1>${user?`Welcome${ac?" back":""}${first?", "+esc(first):""} 👋`:"Learn IT skills that open doors"}</h1>
- <p>${ac?"Pick up where you left off. All your slides, videos and notes are one tap away.":"Practical, facilitator-led IT training with slides, videos and notes you can study anywhere, right here on the site."}</p>
+ <p>${ac?"Pick up where you left off. All your slides, videos and notes are one tap away.":"Practical, facilitator-led IT training with slides, videos and notes. The first lesson of every course is free."}</p>
  ${!user?'<button class="wb" id="go">Get started</button>':""}</div>
  <div class="hs"><div><b>${c.length}</b><span>Courses</span></div><div><b>${ac?(isMgr?"∞":days):"24/7"}</b><span>${ac?"Days left":"Access"}</span></div><div><b>📱</b><span>Any device</span></div></div></section>`;
  if(!user)h+=`<div class="stps"><div><b>1</b><br><strong>Create an account</strong><p>Sign up free in under a minute.</p></div><div><b>2</b><br><strong>Subscribe</strong><p>Pay by MoMo or card and confirm with your reference.</p></div><div><b>3</b><br><strong>Start learning</strong><p>Get instant access to every course.</p></div></div>`;
@@ -203,9 +206,9 @@ function homeView(){
  h+=`<h2 class="sec">${ac?"Your courses":"Available courses"}</h2>`;
  if(!S.loaded)return h+`<div class="cg"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`;
  h+=`<div class="cg">`+(c.map(x=>{const pc=x.n?Math.min(100,Math.round(doneIn(x.id)/x.n*100)):0;
-  return `<article class="cr" data-c="${x.id}"><div class="cv" style="background:${grad(x.title)}">${EM[hs(x.title)]}${ac?"":"<em>🔒 Subscribe</em>"}</div><div class="cb"><h3>${esc(x.title)}</h3><p>${esc(x.desc)}</p>
-  ${ac&&x.n?`<div class="bar"><i style="width:${pc}%"></i></div>`:""}<div class="meta"><span>${x.n?x.n+" lesson"+(x.n>1?"s":""):"Coming soon"}</span><b style="color:var(--a)">${ac?(pc?pc+"% · Continue":"Start →"):""}</b></div></div></article>`}).join("")||'<p class="note">Courses will appear here soon.</p>')+`</div>`;
- return h;
+  return `<article class="cr" data-c="${x.id}"><div class="cv" style="background:${grad(x.title)}">${EM[hs(x.title)]}${ac?"":"<em>🎁 First lesson free</em>"}</div><div class="cb"><h3>${esc(x.title)}</h3><p>${esc(x.desc)}</p>
+  ${ac&&x.n?`<div class="bar"><i style="width:${pc}%"></i></div>`:""}<div class="meta"><span>${x.n?x.n+" lesson"+(x.n>1?"s":""):"Coming soon"}</span><b style="color:var(--a)">${ac?(pc?pc+"% · Continue":"Start →"):"Try free →"}</b></div></div></article>`}).join("")||'<p class="note">Courses will appear here soon.</p>')+`</div>`;
+ return h+(user?commentBox(null):"");
 }
 function notifyLinks(p){
  const c=S.cfg,who=p.n||(user&&user.displayName)||p.e,t=`Hello, this is ${who} (${p.e}). I have paid ${p.a||c.price||""} via ${p.m||"payment"}. Reference: ${p.ref}. Please confirm my Danest Learning access. Thank you.`,w=digits(S.main.whatsapp),em=S.main.email||ADMIN_EMAIL;
@@ -227,22 +230,24 @@ function payView(){
 }
 function bindHome(){
  const g=$("go");if(g)g.onclick=()=>render(true);
- document.querySelectorAll(".cr").forEach(e=>e.onclick=()=>{if(!user){render(true);return}if(!active()){scrollTo({top:0,behavior:"smooth"});return}openCourse(e.dataset.c)});
+ document.querySelectorAll(".cr").forEach(e=>e.onclick=()=>{if(!user){render(true);return}openCourse(e.dataset.c)});
  const ps=$("ps");if(ps)ps.onclick=async()=>{const r=$("pr").value.trim();if(r.length<4){$("pm").textContent="Please enter your transaction ID or reference.";return}
   ps.disabled=true;$("pm").textContent="Sending…";try{await addDoc(collection(db,"payments"),{uid:user.uid,n:user.displayName||"",e:user.email,ref:r,m:$("pm_m").value,a:$("pm_a").value.trim(),ph:$("pm_p").value.trim(),at:Date.now(),s:"pending"})}catch(e){$("pm").textContent="Could not send. Check your connection and try again.";ps.disabled=false}};
 }
 function openCourse(id){courseId=id;matId=null;loadMats(id);render();scrollTo(0,0)}
 function courseView(){
- const c=S.courses.find(x=>x.id===courseId)||{},m=S.mats,dn=m.filter(x=>S.prog[x.id]).length,pc=m.length?Math.round(dn/m.length*100):0;
- let h=`<div class="ch" style="background:${grad(c.title)}"><button class="g" id="bk">← All courses</button><h1>${EM[hs(c.title)]} ${esc(c.title)}</h1><p>${esc(c.desc)}</p><div class="bar"><i id="pbf" style="width:${pc}%"></i></div><small id="pbl">${dn} of ${m.length} lessons complete · ${pc}%</small></div>`;
+ const c=S.courses.find(x=>x.id===courseId)||{},m=S.mats,ac=active(),dn=m.filter(x=>S.prog[x.id]).length,tot=ac?m.length:(c.n||m.length),pc=tot?Math.round(dn/tot*100):0;
+ let h=`<div class="ch" style="background:${grad(c.title)}"><button class="g" id="bk">← All courses</button><h1>${EM[hs(c.title)]} ${esc(c.title)}</h1><p>${esc(c.desc)}</p><div class="bar"><i id="pbf" style="width:${pc}%"></i></div><small id="pbl">${dn} of ${tot} lessons complete · ${pc}%</small></div>`;
  if(locked)return h+`<div class="card">Your subscription has expired. Please renew to continue.</div>`;
- if(!m.length)return h+'<p class="note">No materials in this course yet.</p>';
- return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio"}[x.k]||""}</div></div></div>`).join("")+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
+ const more=Math.max(0,(c.n||0)-m.length),up=ac?"":`<div class="card" style="margin-top:12px;text-align:center"><div style="font-size:34px">🔒</div><b>${more?more+" more lesson"+(more>1?"s":""):"More lessons"} unlock with a subscription</b><p class="note">Enjoy the free lesson, then subscribe to continue.</p><button id="sub">Subscribe to unlock</button></div>`;
+ if(!m.length)return h+(ac?'<p class="note">No materials in this course yet.</p>':'<p class="note">This course has no free lesson yet.</p>')+up;
+ return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio"}[x.k]||""}${x.free?" · 🎁 Free":""}</div></div></div>`).join("")+up+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
 }
 function selMat(id){matId=id;document.querySelectorAll(".mi").forEach(e=>e.classList.toggle("on",e.dataset.m===id));showMat(S.mats.find(x=>x.id===id));if(innerWidth<=900)$("vh").scrollIntoView({behavior:"smooth"})}
 function bindCourse(){
  $("bk").onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(isMgr?S.cur:null);render();scrollTo(0,0)};
  document.querySelectorAll(".mi").forEach(e=>e.onclick=()=>selMat(e.dataset.m));
+ const sb=$("sub");if(sb)sb.onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(null);render();scrollTo(0,0)};
  if(matId)showMat(S.mats.find(x=>x.id===matId));
 }
 function refreshProg(){
@@ -253,6 +258,13 @@ function refreshProg(){
  const b=$("dn");if(b&&curMat){const d=!!S.prog[curMat.id];b.textContent=d?"✓ Completed":"Mark as complete";b.classList.toggle("g",d)}
 }
 let curMat=null;
+const cmtList=mid=>S.cmts.filter(c=>(c.mat||"")===(mid||"")).sort((a,b)=>(b.at||0)-(a.at||0)).map(c=>`<div class="cm"><small class="note">${fmt(c.at)}</small><p>${esc(c.t)}</p>${c.r?`<div class="rp"><b>Facilitator:</b> ${esc(c.r)}</div>`:'<span class="note">Awaiting reply</span>'}</div>`).join("")||'<p class="note">No comments yet.</p>';
+function commentBox(m){return `<div class="card cmb" data-mid="${m?m.id:""}" style="margin-top:14px"><h3 style="margin:0 0 6px">💬 ${m?"Comment or ask about this lesson":"Message your facilitator"}</h3><textarea class="ct" rows="3" maxlength="1000" placeholder="Type your comment or question…"></textarea><button class="cs">Send to facilitator</button> <span class="note cst"></span><div class="cl2">${cmtList(m?m.id:"")}</div></div>`}
+function cmtRefresh(){document.querySelectorAll(".cmb").forEach(b=>{b.querySelector(".cl2").innerHTML=cmtList(b.dataset.mid)});if(isMgr)render()}
+document.addEventListener("click",async e=>{const bt=e.target.closest(".cs");if(!bt||!user)return;
+ const box=bt.closest(".cmb"),ta=box.querySelector(".ct"),st=box.querySelector(".cst"),t=ta.value.trim(),mid=box.dataset.mid;if(!t){st.textContent="Write something first.";return}
+ const m=mid?S.mats.find(x=>x.id===mid):null,c=m?S.courses.find(x=>x.id===courseId):null;bt.disabled=true;
+ try{await addDoc(collection(db,"comments"),{uid:user.uid,n:user.displayName||"",e:user.email,t,cr:c?c.id:"",ct:c?c.title:"",mat:m?m.id:"",mt:m?m.title:"",at:Date.now(),s:"new"});ta.value="";st.textContent="Sent ✓ Replies will appear here."}catch(err){st.textContent="Could not send. Try again."}bt.disabled=false});
 function lessonBar(){
  const x=curMat,i=S.mats.findIndex(m=>m.id===x.id),d=!!S.prog[x.id];
  return `<div class="tb"><button class="g" id="lp" ${i<1?"disabled":""}>← Previous</button><button id="dn" class="${d?"g":""}">${d?"✓ Completed":"Mark as complete"}</button><button class="g" id="ln" ${i>=S.mats.length-1?"disabled":""}>Next →</button></div>`;
@@ -261,7 +273,7 @@ function lessonBar(){
 let blobs=[];
 function stopViewer(){blobs.forEach(u=>URL.revokeObjectURL(u));blobs=[]}
 const wm=()=>`<div class="wm">${Array(160).fill(esc(user?user.email:"")).join(" ")}</div>`;
-function wrap(inner){const v=$("vh");if(!v||!curMat)return;v.innerHTML=`<h3 class="lt">${esc(curMat.title)}</h3><div class="vw" id="vw">${inner}${wm()}</div>${lessonBar()}<p class="note">Licensed to ${esc(user.email)}. Copying or sharing is not permitted.</p>`;
+function wrap(inner){const v=$("vh");if(!v||!curMat)return;v.innerHTML=`<h3 class="lt">${esc(curMat.title)}</h3><div class="vw" id="vw">${inner}${wm()}</div>${lessonBar()}${commentBox(curMat)}<p class="note">Licensed to ${esc(user.email)}. Copying or sharing is not permitted.</p>`;
  const w=$("vw");["contextmenu","dragstart","copy","cut"].forEach(ev=>w.addEventListener(ev,e=>e.preventDefault()));
  const i=S.mats.findIndex(m=>m.id===curMat.id);
  $("lp").onclick=()=>selMat(S.mats[i-1].id);$("ln").onclick=()=>selMat(S.mats[i+1].id);
@@ -275,6 +287,9 @@ function embedUrl(u){
  return u;
 }
 function note(t){return t.split(/\n/).map(l=>/^# /.test(l)?`<h3>${esc(l.slice(2))}</h3>`:/^- /.test(l)?`<p>• ${esc(l.slice(2))}</p>`:l.trim()?`<p>${esc(l)}</p>`:"").join("")}
+async function fetchFile(x){
+ const ps=await Promise.all(Array.from({length:x.cn||0},(_,i)=>getDoc(doc(db,"files",x.id+"_"+i)))),b=atob(ps.map(p=>p.data().d).join("")),u=new Uint8Array(b.length);
+ for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer}
 let pdfLib=null;
 function loadPdfJs(){return pdfLib||(pdfLib=new Promise((res,rej)=>{const s=document.createElement("script"),B="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";s.src=B+"pdf.min.js";
  s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([`importScripts("${B}pdf.worker.min.js")`],{type:"text/javascript"}));res(window.pdfjsLib)};s.onerror=rej;document.head.appendChild(s)}))}
@@ -284,7 +299,7 @@ async function showMat(x){
  if(x.k==="embed")return wrap(`<iframe src="${esc(embedUrl(x.url))}" allowfullscreen allow="fullscreen;autoplay" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`);
  const v=$("vh");v.innerHTML='<div class="sk" style="height:260px"></div>';
  try{
-  const buf=await getBytes(ref(st,x.path),MAXMB*1048576);if(matId!==x.id)return;
+  const buf=await fetchFile(x);if(matId!==x.id)return;
   if(x.k==="pdf"){
    wrap(`<div class="pgs" id="pgs"></div>`);const lib=await loadPdfJs(),pdf=await lib.getDocument({data:buf}).promise,box=$("pgs");
    for(let i=1;i<=pdf.numPages;i++){const p=await pdf.getPage(i),vp=p.getViewport({scale:Math.min(2,(devicePixelRatio||1)*1.4)}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;box.appendChild(c);await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;if(matId!==x.id)return}
@@ -293,7 +308,7 @@ async function showMat(x){
   if(x.k==="image")wrap(`<img class="im" src="${url}" alt="" draggable="false">`);
   else if(x.k==="video")wrap(`<video src="${url}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline></video>`);
   else wrap(`<audio src="${url}" controls controlsList="nodownload"></audio>`);
- }catch(e){$("vh").innerHTML='<p class="note">Could not load this material. '+(e.code==="storage/unauthorized"?"Your subscription may have expired.":"Check your connection and try again.")+"</p>"}
+ }catch(e){$("vh").innerHTML='<p class="note">Could not load this material. '+(e.code==="permission-denied"?"Your subscription may have expired.":"Check your connection and try again.")+"</p>"}
 }
 
 /* ---------- sign in / up ---------- */
@@ -321,11 +336,11 @@ function bindAuth(){
 }
 
 /* ---------- facilitator dashboard ---------- */
-const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",set:"Subscription settings"};
+const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",cmts:"Comments",set:"Subscription settings"};
 function adminView(){
- const pend=S.allPays.filter(p=>p.s==="pending").length;
+ const pend=S.allPays.filter(p=>p.s==="pending").length,cm=S.cmts.filter(c=>!c.r).length;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">Facilitator dashboard</h2><button class="g" id="pv">Preview as learner</button></div>
- ${pend?`<div class="alert"><span>🔔 ${pend} payment${pend>1?"s":""} waiting for your confirmation</span><button data-t="pays">Review now</button></div>`:""}<div class="tabs">`+Object.keys(TABS).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${TABS[k]}${k==="pays"&&pend?` (${pend})`:""}</button>`).join("")+`</div>`;
+ ${pend?`<div class="alert"><span>🔔 ${pend} payment${pend>1?"s":""} waiting for your confirmation</span><button data-t="pays">Review now</button></div>`:""}${cm?`<div class="alert"><span>💬 ${cm} new comment${cm>1?"s":""} from learners</span><button data-t="cmts">Read</button></div>`:""}<div class="tabs">`+Object.keys(TABS).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${TABS[k]}${k==="pays"&&pend?` (${pend})`:""}${k==="cmts"&&cm?` (${cm})`:""}</button>`).join("")+`</div>`;
  if(tab==="courses"){
   h+=`<div class="card"><h3 style="margin-top:0">New course</h3><input id="c_t" placeholder="Course title" maxlength="100"><textarea id="c_d" rows="2" placeholder="Short description"></textarea><button id="c_a">Add course</button></div>`;
   h+=S.courses.map(c=>`<div class="row"><div><b>${esc(c.title)}</b> <span class="note">· ${c.live?"Published":"Hidden"}</span><small>${esc(c.desc)}</small></div><div class="acts"><button data-a="open" data-id="${c.id}">Materials</button><button class="g" data-a="live" data-id="${c.id}">${c.live?"Hide":"Publish"}</button><button class="g" data-a="delc" data-id="${c.id}">×</button></div></div>`).join("");
@@ -334,6 +349,7 @@ function adminView(){
  if(tab==="subs")h+=S.learners.sort((a,b)=>(b.at||0)-(a.at||0)).map(l=>{const s=S.allSubs.find(x=>x.id===l.id),on=s&&s.until>Date.now();
   return `<div class="row"><div><b>${esc(l.n||"(no name)")}</b><small>${esc(l.e)}</small><small>${on?"Active until "+fmt(s.until):s&&s.until?"Expired "+fmt(s.until):"No subscription"}</small></div><div class="acts"><button data-a="grant" data-id="${l.id}">+${S.cfg.days||30} days</button><button class="g" data-a="revoke" data-id="${l.id}">Revoke</button></div></div>`}).join("")||'<p class="note">No learners yet.</p>';
  if(tab==="pays")h+=[...S.allPays].sort((a,b)=>(a.s==="pending"?0:1)-(b.s==="pending"?0:1)||(b.at||0)-(a.at||0)).map(p=>`<div class="row ${p.s==="pending"?"":"done"}"><div><b>${esc(p.n||p.e)}</b> <span class="badge ${p.s==="approved"?"ok":""}">${esc(p.s)}</span><small>${esc(p.e)}</small><small>${esc(p.m||"")} ${p.a?"· "+esc(p.a):""} · Ref: <b>${esc(p.ref)}</b> · ${fmt(p.at)}</small>${p.ph?`<small>📞 <a href="https://wa.me/${digits(p.ph)}" target="_blank" rel="noopener">${esc(p.ph)}</a></small>`:""}</div><div class="acts">${p.s==="pending"?`<button data-a="approve" data-id="${p.id}">Approve</button><button class="g" data-a="reject" data-id="${p.id}">Reject</button>`:`<button class="g" data-a="delp" data-id="${p.id}">×</button>`}</div></div>`).join("")||'<p class="note">No payments yet.</p>';
+ if(tab==="cmts")h+=[...S.cmts].sort((a,b)=>(!a.r?0:1)-(!b.r?0:1)||(b.at||0)-(a.at||0)).map(c=>`<div class="row" style="flex-direction:column"><div style="width:100%"><b>${esc(c.n||c.e)}</b> ${c.r?'<span class="badge ok">Replied</span>':'<span class="badge">New</span>'}<small>${esc(c.e)} · ${fmt(c.at)} · ${c.ct?esc(c.ct)+" › "+esc(c.mt):"General message"}</small><p style="margin:6px 0">${esc(c.t)}</p>${c.r?`<small>Your reply: ${esc(c.r)}</small>`:""}<input id="r_${c.id}" placeholder="${c.r?"Edit your reply":"Write a reply"}"></div><div class="acts"><button data-a="reply" data-id="${c.id}">Send reply</button><button class="g" data-a="delcm" data-id="${c.id}">×</button></div></div>`).join("")||'<p class="note">No comments yet.</p>';
  if(tab==="set"){const c=S.cfg;h+=`<div class="card"><input id="s_p" placeholder="Price shown to learners, e.g. GHS 150 per month" value="${esc(c.price)}"><input id="s_d" type="number" inputmode="numeric" placeholder="Days of access per payment" value="${esc(c.days||30)}"><input id="s_u" placeholder="Payment link (Paystack payment page, optional)" value="${esc(c.payUrl)}"><textarea id="s_i" rows="4" placeholder="Payment instructions, e.g. MoMo number and name">${esc(c.instr)}</textarea><button id="s_b">Save settings</button> <span class="note" id="s_m"></span></div>`}
  return h;
 }
@@ -342,9 +358,9 @@ function matAdmin(){
  return `<h3>Materials: ${esc(c.title)}</h3><div class="card"><input id="m_t" placeholder="Lesson title" maxlength="120">
  <select id="m_k"><option value="embed">Video or slides link (YouTube, Vimeo, Google Slides, Drive)</option><option value="file">Upload file (PDF slides, image, audio, short video)</option><option value="note">Written lesson</option></select>
  <div id="m_f"></div><button id="m_a">Add material</button> <span class="note" id="m_s"></span></div>`
- +S.mats.map(x=>`<div class="row"><div><b>${ICON[x.k]||"📄"} ${esc(x.title)}</b><small>${esc(x.path||x.url||"")}</small></div><div class="acts"><button class="g" data-a="delm" data-id="${x.id}">×</button></div></div>`).join("");
+ +S.mats.map(x=>`<div class="row"><div><b>${ICON[x.k]||"📄"} ${esc(x.title)}</b><small>${x.free?"🎁 Free lesson · ":""}${esc(x.name||x.url||"")}</small></div><div class="acts"><button class="g" data-a="free" data-id="${x.id}">${x.free?"Make paid":"Make free"}</button><button class="g" data-a="delm" data-id="${x.id}">×</button></div></div>`).join("");
 }
-function matFields(){const k=$("m_k").value;$("m_f").innerHTML=k==="embed"?'<input id="m_u" placeholder="https:// link to video or slides">':k==="note"?'<textarea id="m_x" rows="6" placeholder="Lesson text. Start a line with # for a heading or - for a bullet."></textarea>':`<input id="m_fl" type="file" accept="application/pdf,image/*,audio/*,video/mp4,video/webm"><p class="note">Max ${MAXMB} MB. Export PowerPoint decks to PDF first. Use YouTube/Vimeo (unlisted) for long videos.</p>`}
+function matFields(){const k=$("m_k").value;$("m_f").innerHTML=k==="embed"?'<input id="m_u" placeholder="https:// link to video or slides">':k==="note"?'<textarea id="m_x" rows="6" placeholder="Lesson text. Start a line with # for a heading or - for a bullet."></textarea>':`<input id="m_fl" type="file" accept="application/pdf,image/*,audio/*,video/mp4,video/webm"><p class="note">Max ${MAXMB} MB per file. Export PowerPoint decks to PDF first (compress if large). Use YouTube/Vimeo (unlisted) for videos.</p>`}
 const kindOf=t=>t==="application/pdf"?"pdf":t.startsWith("image/")?"image":t.startsWith("video/")?"video":t.startsWith("audio/")?"audio":"";
 function bindAdmin(){
  $("pv").onclick=()=>{const c=S.courses.find(x=>x.id===S.cur)||S.courses[0];if(c)openCourse(c.id);else alert("Add a course first.")};
@@ -359,22 +375,26 @@ function bindAdmin(){
 }
 async function addMat(){
  const k=$("m_k").value,t=$("m_t").value.trim(),s=$("m_s"),b=$("m_a");if(!t){s.textContent="Add a title.";return}
- const base={course:S.cur,title:t,at:Date.now()};b.disabled=true;
+ const mref=doc(collection(db,"materials")),free=S.mats.length===0,base={course:S.cur,title:t,at:Date.now(),free};b.disabled=true;
  try{
-  if(k==="embed"){const u=safe($("m_u").value.trim());if(!u){s.textContent="Enter a valid https link.";b.disabled=false;return}await addDoc(collection(db,"materials"),{...base,k:"embed",url:u})}
-  else if(k==="note"){const x=$("m_x").value.trim();if(!x){s.textContent="Write the lesson text.";b.disabled=false;return}await addDoc(collection(db,"materials"),{...base,k:"note",text:x})}
+  if(k==="embed"){const u=safe($("m_u").value.trim());if(!u){s.textContent="Enter a valid https link.";b.disabled=false;return}await setDoc(mref,{...base,k:"embed",url:u})}
+  else if(k==="note"){const x=$("m_x").value.trim();if(!x){s.textContent="Write the lesson text.";b.disabled=false;return}await setDoc(mref,{...base,k:"note",text:x})}
   else{const f=$("m_fl").files[0];if(!f){s.textContent="Choose a file.";b.disabled=false;return}const kind=kindOf(f.type);
    if(!kind||f.size>MAXMB*1048576){s.textContent="Unsupported type or larger than "+MAXMB+" MB.";b.disabled=false;return}
-   const path=`learn/${S.cur}/${Date.now()}-${f.name.replace(/[^\w.\-]/g,"_")}`,task=uploadBytesResumable(ref(st,path),f,{contentType:f.type});
-   await new Promise((res,rej)=>task.on("state_changed",p=>s.textContent="Uploading "+Math.round(p.bytesTransferred/p.totalBytes*100)+"%",rej,res));
-   await addDoc(collection(db,"materials"),{...base,k:kind,path,mime:f.type})}
-  s.textContent="Added ✓";$("m_t").value="";
- }catch(e){s.textContent=e.code==="storage/unauthorized"?"Upload blocked: publish storage.rules in Firebase.":"Failed: "+(e.code||e.message)}
+   s.textContent="Reading file…";
+   const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(f)}),parts=Math.ceil(b64.length/CH);
+   for(let i=0;i<parts;i++){await setDoc(doc(db,"files",mref.id+"_"+i),{mid:mref.id,n:i,d:b64.slice(i*CH,(i+1)*CH)});s.textContent="Uploading "+Math.round((i+1)/parts*100)+"%"}
+   await setDoc(mref,{...base,k:kind,cn:parts,mime:f.type,name:f.name})}
+  s.textContent="Added ✓"+(free?" (set as the free lesson)":"");$("m_t").value="";
+ }catch(e){s.textContent="Failed: "+(e.code||e.message)+(e.code==="permission-denied"?" · publish the latest firestore.rules in Firebase.":"")}
  b.disabled=false;
 }
 async function act(a,id){
  const days=(S.cfg.days||30)*DAY,grant=async(uid,p)=>{const s=S.allSubs.find(x=>x.id===uid),from=Math.max(Date.now(),s&&s.until||0);await setDoc(doc(db,"subs",uid),{until:from+days,n:p?p.n:"",e:p?p.e:""},{merge:true})};
  if(a==="open"){S.cur=S.cur===id?null:id;loadMats(S.cur);render()}
+ if(a==="free"){const m=S.mats.find(x=>x.id===id);await setDoc(doc(db,"materials",id),{free:!m.free},{merge:true})}
+ if(a==="reply"){const t=$("r_"+id).value.trim();if(t)await setDoc(doc(db,"comments",id),{r:t,ra:Date.now(),s:"replied"},{merge:true})}
+ if(a==="delcm"&&confirm("Delete this comment?"))await deleteDoc(doc(db,"comments",id));
  if(a==="live"){const c=S.courses.find(x=>x.id===id);await setDoc(doc(db,"courses",id),{live:!c.live},{merge:true})}
  if(a==="delc"&&confirm("Delete this course and all its materials?")){const ms=S.mats.filter(m=>m.course===id);S.cur=null;loadMats(null);for(const m of ms)await delMat(m);await deleteDoc(doc(db,"courses",id))}
  if(a==="delm"&&confirm("Delete this material?"))delMat(S.mats.find(x=>x.id===id));
@@ -384,7 +404,7 @@ async function act(a,id){
  if(a==="reject")await setDoc(doc(db,"payments",id),{s:"rejected"},{merge:true});
  if(a==="delp")await deleteDoc(doc(db,"payments",id));
 }
-async function delMat(m){if(!m)return;if(m.path)try{await deleteObject(ref(st,m.path))}catch(e){}await deleteDoc(doc(db,"materials",m.id))}
+async function delMat(m){if(!m)return;for(let i=0;i<(m.cn||0);i++)try{await deleteDoc(doc(db,"files",m.id+"_"+i))}catch(e){}await deleteDoc(doc(db,"materials",m.id))}
 </script>
 </body>
 </html>
