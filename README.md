@@ -25,3 +25,4 @@
    - Courses & materials: add a course, add lessons (video/slides link, uploaded PDF/image/audio/video, or written lesson), then Publish the course.
    - Payments: approve a learner's payment reference to activate their access. Learners tab can also grant or revoke days manually.
 4. Export PowerPoint decks to PDF before uploading; they display slide-by-slide inside the site.
+5. Payment alerts: when a learner confirms payment you see a banner and a count in the tab title on learn.html, and the learner can notify you in one tap by WhatsApp or email (set your WhatsApp number and email under Site details on the main site).

@@ -85,6 +85,33 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 @media print{.vw{display:none!important}body:after{content:"Printing is disabled for course materials.";display:block;padding:40px}}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:760px){.two{grid-template-columns:1fr}}
 #adm,#auth,#pay{display:none}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}@keyframes sh{to{background-position:-200% 0}}
+#app>*{animation:up .35s ease both}
+.hero2{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center;padding:34px;border-radius:24px;color:#fff;background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.22),transparent 45%),linear-gradient(135deg,#1d5fd1,#7c3aed);box-shadow:var(--sh);margin-bottom:8px}
+@media(max-width:760px){.hero2{grid-template-columns:1fr;padding:24px 20px}}
+.hero2 h1{color:#fff;margin:10px 0}.hero2 p{margin:0 0 18px;opacity:.92;max-width:520px}
+.pill2{display:inline-block;font-size:13px;font-weight:700;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.2)}
+.hero2 .wb{background:#fff;color:#1d4fb0;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.hs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.hs div{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px 8px;text-align:center}.hs b{display:block;font-size:24px}.hs span{font-size:12px;opacity:.9}
+.stps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}@media(max-width:760px){.stps{grid-template-columns:1fr}}
+.stps div{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:16px}.stps b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;margin-bottom:8px}.stps p{margin:4px 0 0;color:var(--m);font-size:14px}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.cr{border:1px solid var(--b);border-radius:18px;background:var(--s);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+@media(hover:hover){.cr:hover{transform:translateY(-4px);box-shadow:var(--sh)}}
+.cv{height:120px;display:grid;place-items:center;font-size:46px;position:relative}.cv em{position:absolute;right:10px;top:10px;font-style:normal;font-size:12px;font-weight:700;background:rgba(0,0,0,.35);color:#fff;border-radius:99px;padding:3px 9px}
+.cb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}.cb h3{margin:0}.cb p{margin:0;color:var(--m);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;justify-content:space-between;font-size:12px;color:var(--m);margin-top:auto;padding-top:6px}
+.bar{height:8px;border-radius:9px;background:var(--b);overflow:hidden}.bar i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--a),var(--a2));transition:width .4s}
+.sk{height:230px;border-radius:18px;background:linear-gradient(90deg,var(--s) 25%,var(--b) 50%,var(--s) 75%);background-size:200% 100%;animation:sh 1.3s linear infinite}
+.ch{border-radius:22px;padding:24px;color:#fff;margin-bottom:16px;box-shadow:var(--sh)}.ch h1{color:#fff;margin:8px 0 4px}.ch p{margin:0 0 14px;opacity:.92}.ch .bar{background:rgba(255,255,255,.3)}.ch .bar i{background:#fff}.ch small{display:block;margin-top:6px;opacity:.95}.ch button.g{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.35)}
+.cl{display:grid;grid-template-columns:310px 1fr;gap:20px;align-items:start}@media(max-width:900px){.cl{grid-template-columns:1fr}}
+.ls{position:sticky;top:76px;max-height:78vh;overflow:auto}@media(max-width:900px){.ls{position:static;max-height:none}}
+.mi b{font-size:14px}.mi .no{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:1px solid var(--b);font-size:13px;font-weight:700}.mi.dn .no{background:#14803c;border-color:#14803c;color:#fff}
+.lt{margin:0 0 4px;font-size:20px}.tb{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between}.tb button{flex:1;min-width:110px}.tb button[disabled]{opacity:.4;pointer-events:none}
+.alert{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff7e0;color:#6b4a00;border:1px solid #f0c24b;border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:600}
+@media(prefers-color-scheme:dark){.alert{background:#3a2e08;color:#ffd978;border-color:#7a5d10}}
+.stp{display:flex;gap:6px;margin:0 0 14px}.stp span{flex:1;text-align:center;font-size:12px;font-weight:700;padding:7px 4px;border-radius:99px;background:var(--bg);border:1px solid var(--b);color:var(--m)}.stp span.on{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border-color:transparent}
+.ok2{border-color:#14803c!important;background:color-mix(in srgb,#14803c 10%,var(--s))}
 .lk{background:none;border:0;color:var(--a);padding:0;min-height:0;box-shadow:none;text-decoration:underline;font-weight:600}
 </style>
 </head>
@@ -107,7 +134,7 @@ const $=i=>document.getElementById(i),esc=s=>String(s==null?"":s).replace(/&/g,"
 const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
 $("yr").textContent=new Date().getFullYear();
 
-let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
+let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},main:{},prog:{},loaded:false,sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
 let courseId=null,matId=null,mode="signin",tab="courses",locked=false,msg="";
 const ICON={note:"📝",embed:"🎞️",pdf:"📊",image:"🖼️",video:"🎬",audio:"🎧"};
 const active=()=>isMgr||(S.sub&&S.sub.until>Date.now());
@@ -117,17 +144,20 @@ const listen=(q,fn,err)=>unsubs.push(onSnapshot(q,s=>fn(s.docs.map(d=>({id:d.id,
 /* ---------- auth state ---------- */
 onAuthStateChanged(auth,u=>{
  user=u;isMgr=!!u&&u.email===ADMIN_EMAIL;unsubs.forEach(f=>f());unsubs=[];
- S.sub=null;S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
+ S.sub=null;S.prog={};S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
  $("ab").style.display="";$("ab").textContent=u?"Sign out":"Sign in";
- listen(collection(db,"courses"),r=>{S.courses=r.sort((a,b)=>(a.at||0)-(b.at||0));render()});
+ listen(collection(db,"courses"),r=>{S.courses=r.sort((a,b)=>(a.at||0)-(b.at||0));S.loaded=true;render()},()=>{S.loaded=true;render()});
+ unsubs.push(onSnapshot(doc(db,"site","main"),s=>{S.main=s.exists()?s.data():{};render()},()=>{}));
  unsubs.push(onSnapshot(doc(db,"site","learn"),s=>{S.cfg=s.exists()?s.data():{};render()},()=>{}));
  if(u&&!isMgr){
   unsubs.push(onSnapshot(doc(db,"subs",u.uid),s=>{S.sub=s.exists()?s.data():null;render()},e=>console.warn(e.code)));
   listen(query(collection(db,"payments"),where("uid","==",u.uid)),r=>{S.pays=r;render()});
+  unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
   if(u.displayName)setDoc(doc(db,"learners",u.uid),{n:u.displayName,e:u.email,at:Date.now()}).catch(()=>{});
  }
  if(isMgr){
+  unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
   listen(collection(db,"learners"),r=>{S.learners=r;render()});
   listen(collection(db,"subs"),r=>{S.allSubs=r;render()});
   listen(collection(db,"payments"),r=>{S.allPays=r;render()});
@@ -138,13 +168,16 @@ let matUn=null;
 function loadMats(id){
  if(matUn){matUn();matUn=null}S.mats=[];locked=false;
  if(!id||!active())return;
- matUn=onSnapshot(query(collection(db,"materials"),where("course","==",id)),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;render()},e=>{locked=e.code==="permission-denied";render()});
+ matUn=onSnapshot(query(collection(db,"materials"),where("course","==",id)),s=>{S.mats=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.at||0)-(b.at||0));locked=false;
+  if(isMgr){const c=S.courses.find(x=>x.id===id);if(c&&c.n!==S.mats.length)setDoc(doc(db,"courses",id),{n:S.mats.length},{merge:true}).catch(()=>{})}
+  render()},e=>{locked=e.code==="permission-denied";render()});
 }
 $("ab").onclick=()=>{if(user)signOut(auth);else{mode="signin";msg="";courseId=null;render(true)}};
 
 /* ---------- views ---------- */
 let showAuth=false;
 function render(forceAuth){
+ const pn=S.allPays.filter(p=>p.s==="pending").length;document.title=(isMgr&&pn?`(${pn}) `:"")+"Danest Learning";
  if(forceAuth===true)showAuth=true;
  if(user)showAuth=false;
  const a=$("app");if(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!forceAuth)return;
@@ -155,52 +188,84 @@ function render(forceAuth){
  if(isMgr){a.innerHTML=adminView();bindAdmin();return}
  a.innerHTML=homeView();bindHome();
 }
+const GR=["#1d5fd1,#7c3aed","#0ea5e9,#2563eb","#7c3aed,#db2777","#059669,#0ea5e9","#f59e0b,#ef4444","#0f766e,#1d5fd1"],EM=["💻","📊","🧠","🌐","📱","🛠️"];
+const hs=t=>[...String(t||"")].reduce((n,c)=>n+c.charCodeAt(0),0)%6,grad=t=>`linear-gradient(135deg,${GR[hs(t)]})`;
+const digits=p=>{let d=String(p||"").replace(/\D/g,"");return d.startsWith("0")?"233"+d.slice(1):d};
+const doneIn=id=>Object.values(S.prog).filter(v=>v===id).length;
 function homeView(){
- const c=S.courses.filter(x=>x.live);
- let h=`<h1>Learn with Danest</h1><p class="sub">Practical IT and software training from your facilitator. Subscribe once and access every course, slide deck and resource right here on the site.</p>`;
- if(!user)h+=`<p><button id="go">Sign in or create an account</button></p>`;
- else if(active())h+=`<p><span class="badge ok">Subscription active until ${fmt(S.sub.until)}</span></p>`;
- else h+=payView();
- h+=`<h2 class="sec">Courses</h2><div class="grid">`+(c.map(x=>`<div class="card h cc" data-c="${x.id}"><div class="ic">📚</div><h3>${esc(x.title)}</h3><p>${esc(x.desc)}</p></div>`).join("")||'<p class="note">Courses will appear here soon.</p>')+`</div>`;
+ const c=S.courses.filter(x=>x.live),first=user?(user.displayName||"").split(" ")[0]:"",ac=active(),days=ac&&!isMgr?Math.max(0,Math.ceil((S.sub.until-Date.now())/DAY)):0;
+ let h=`<section class="hero2"><div><span class="pill2">🎓 Danest Learning</span><h1>${user?`Welcome${ac?" back":""}${first?", "+esc(first):""} 👋`:"Learn IT skills that open doors"}</h1>
+ <p>${ac?"Pick up where you left off. All your slides, videos and notes are one tap away.":"Practical, facilitator-led IT training with slides, videos and notes you can study anywhere, right here on the site."}</p>
+ ${!user?'<button class="wb" id="go">Get started</button>':""}</div>
+ <div class="hs"><div><b>${c.length}</b><span>Courses</span></div><div><b>${ac?(isMgr?"∞":days):"24/7"}</b><span>${ac?"Days left":"Access"}</span></div><div><b>📱</b><span>Any device</span></div></div></section>`;
+ if(!user)h+=`<div class="stps"><div><b>1</b><br><strong>Create an account</strong><p>Sign up free in under a minute.</p></div><div><b>2</b><br><strong>Subscribe</strong><p>Pay by MoMo or card and confirm with your reference.</p></div><div><b>3</b><br><strong>Start learning</strong><p>Get instant access to every course.</p></div></div>`;
+ else if(!ac)h+=payView();
+ h+=`<h2 class="sec">${ac?"Your courses":"Available courses"}</h2>`;
+ if(!S.loaded)return h+`<div class="cg"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`;
+ h+=`<div class="cg">`+(c.map(x=>{const pc=x.n?Math.min(100,Math.round(doneIn(x.id)/x.n*100)):0;
+  return `<article class="cr" data-c="${x.id}"><div class="cv" style="background:${grad(x.title)}">${EM[hs(x.title)]}${ac?"":"<em>🔒 Subscribe</em>"}</div><div class="cb"><h3>${esc(x.title)}</h3><p>${esc(x.desc)}</p>
+  ${ac&&x.n?`<div class="bar"><i style="width:${pc}%"></i></div>`:""}<div class="meta"><span>${x.n?x.n+" lesson"+(x.n>1?"s":""):"Coming soon"}</span><b style="color:var(--a)">${ac?(pc?pc+"% · Continue":"Start →"):""}</b></div></div></article>`}).join("")||'<p class="note">Courses will appear here soon.</p>')+`</div>`;
  return h;
 }
+function notifyLinks(p){
+ const c=S.cfg,who=p.n||(user&&user.displayName)||p.e,t=`Hello, this is ${who} (${p.e}). I have paid ${p.a||c.price||""} via ${p.m||"payment"}. Reference: ${p.ref}. Please confirm my Danest Learning access. Thank you.`,w=digits(S.main.whatsapp),em=S.main.email||ADMIN_EMAIL;
+ return (w?`<a class="btn" style="background:#25d366" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(t)}">💬 Notify on WhatsApp</a> `:"")+`<a class="btn g" href="mailto:${esc(em)}?subject=${encodeURIComponent("Payment confirmation: "+who)}&body=${encodeURIComponent(t)}">✉️ Notify by email</a>`;
+}
 function payView(){
- const c=S.cfg,pend=S.pays.filter(p=>p.s==="pending"),last=S.sub&&S.sub.until?`<p class="note">Your last subscription ended ${fmt(S.sub.until)}.</p>`:"";
- return `<div class="card"><h3 style="margin-top:0">Subscribe to unlock all materials</h3>${last}
- <p><b>${esc(c.price||"Subscription price coming soon")}</b>${c.days?` · ${c.days} days access`:""}</p>
- <p style="white-space:pre-wrap">${esc(c.instr||"")}</p>
+ const c=S.cfg,ps=[...S.pays].sort((a,b)=>(b.at||0)-(a.at||0)),pend=ps.find(x=>x.s==="pending"),rej=!pend&&ps[0]&&ps[0].s==="rejected",st=n=>`<span class="${n<=(pend?2:1)?"on":""}">${n===1?"1 Pay":n===2?"2 Confirm":"3 Learn"}</span>`;
+ let h=`<div class="card" style="margin-top:16px"><div class="stp">${st(1)}${st(2)}${st(3)}</div>`;
+ if(pend)return h+`<h3 style="margin:0 0 6px">⏳ Waiting for your facilitator to confirm</h3><p>We received reference <b>${esc(pend.ref)}</b>. Tap below so your facilitator is alerted straight away. Access unlocks here automatically once confirmed.</p><p style="display:flex;gap:8px;flex-wrap:wrap">${notifyLinks(pend)}</p></div>`;
+ const last=S.sub&&S.sub.until?`<p class="note">Your last subscription ended ${fmt(S.sub.until)}.</p>`:"";
+ return h+`<h3 style="margin:0 0 6px">Subscribe to unlock every course</h3>${rej?'<p class="note" style="color:#d33">Your last payment could not be confirmed. Please check the reference and try again.</p>':""}${last}
+ <p style="font-size:18px;margin:6px 0"><b>${esc(c.price||"Price coming soon")}</b>${c.days?` <span class="note">· ${c.days} days of access</span>`:""}</p>
+ ${c.instr?`<p style="white-space:pre-wrap;background:var(--bg);border:1px solid var(--b);border-radius:12px;padding:12px">${esc(c.instr)}</p>`:""}
  ${safe(c.payUrl)?`<p><a class="btn" href="${esc(c.payUrl)}" target="_blank" rel="noopener">Pay now</a></p>`:""}
- ${pend.length?`<p class="note">✅ Payment reference <b>${esc(pend[0].ref)}</b> received. Your facilitator will activate your access shortly.</p>`:`
- <p class="note">After paying, enter your payment reference or the MoMo/transaction ID so access can be activated.</p>
- <input id="pr" placeholder="Payment reference / transaction ID" maxlength="80"><button id="ps">I have paid</button> <span class="note" id="pm"></span>`}</div>`;
+ <p class="note"><b>Step 2:</b> once you have paid, confirm it below and your facilitator will be alerted.</p>
+ <select id="pm_m"><option>Mobile Money</option><option>Card / Paystack</option><option>Bank transfer</option><option>Cash</option></select>
+ <input id="pm_a" placeholder="Amount paid, e.g. GHS 150" maxlength="30"><input id="pr" placeholder="Transaction ID / payment reference" maxlength="80"><input id="pm_p" type="tel" inputmode="tel" placeholder="Phone number used to pay (optional)" maxlength="20">
+ <button id="ps">✅ I have paid, confirm my payment</button> <span class="note" id="pm"></span></div>`;
 }
 function bindHome(){
  const g=$("go");if(g)g.onclick=()=>render(true);
- document.querySelectorAll(".cc").forEach(e=>e.onclick=()=>{if(!user){render(true);return}if(!active()){scrollTo(0,0);return}openCourse(e.dataset.c)});
- const ps=$("ps");if(ps)ps.onclick=async()=>{const r=$("pr").value.trim();if(r.length<4){$("pm").textContent="Please enter the reference.";return}
-  ps.disabled=true;try{await addDoc(collection(db,"payments"),{uid:user.uid,n:user.displayName||"",e:user.email,ref:r,at:Date.now(),s:"pending"})}catch(e){$("pm").textContent="Could not send. Try again.";ps.disabled=false}};
+ document.querySelectorAll(".cr").forEach(e=>e.onclick=()=>{if(!user){render(true);return}if(!active()){scrollTo({top:0,behavior:"smooth"});return}openCourse(e.dataset.c)});
+ const ps=$("ps");if(ps)ps.onclick=async()=>{const r=$("pr").value.trim();if(r.length<4){$("pm").textContent="Please enter your transaction ID or reference.";return}
+  ps.disabled=true;$("pm").textContent="Sending…";try{await addDoc(collection(db,"payments"),{uid:user.uid,n:user.displayName||"",e:user.email,ref:r,m:$("pm_m").value,a:$("pm_a").value.trim(),ph:$("pm_p").value.trim(),at:Date.now(),s:"pending"})}catch(e){$("pm").textContent="Could not send. Check your connection and try again.";ps.disabled=false}};
 }
-function openCourse(id){courseId=id;matId=null;loadMats(id);render()}
+function openCourse(id){courseId=id;matId=null;loadMats(id);render();scrollTo(0,0)}
 function courseView(){
- const c=S.courses.find(x=>x.id===courseId)||{};
- let h=`<p><button class="g" id="bk">← All courses</button></p><h1>${esc(c.title)}</h1><p class="sub">${esc(c.desc)}</p>`;
+ const c=S.courses.find(x=>x.id===courseId)||{},m=S.mats,dn=m.filter(x=>S.prog[x.id]).length,pc=m.length?Math.round(dn/m.length*100):0;
+ let h=`<div class="ch" style="background:${grad(c.title)}"><button class="g" id="bk">← All courses</button><h1>${EM[hs(c.title)]} ${esc(c.title)}</h1><p>${esc(c.desc)}</p><div class="bar"><i id="pbf" style="width:${pc}%"></i></div><small id="pbl">${dn} of ${m.length} lessons complete · ${pc}%</small></div>`;
  if(locked)return h+`<div class="card">Your subscription has expired. Please renew to continue.</div>`;
- const m=S.mats;if(!m.length)return h+'<p class="note">No materials in this course yet.</p>';
- h+=`<div class="two"><div>`+m.map(x=>`<div class="mi ${x.id===matId?"on":""}" data-m="${x.id}"><i>${ICON[x.k]||"📄"}</i><div><b>${esc(x.title)}</b></div></div>`).join("")+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<p class="note">Choose a lesson to begin.</p>'}</div></div>`;
- return h;
+ if(!m.length)return h+'<p class="note">No materials in this course yet.</p>';
+ return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio"}[x.k]||""}</div></div></div>`).join("")+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
 }
+function selMat(id){matId=id;document.querySelectorAll(".mi").forEach(e=>e.classList.toggle("on",e.dataset.m===id));showMat(S.mats.find(x=>x.id===id));if(innerWidth<=900)$("vh").scrollIntoView({behavior:"smooth"})}
 function bindCourse(){
- $("bk").onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(isMgr?S.cur:null);render()};
- document.querySelectorAll(".mi").forEach(e=>e.onclick=()=>{matId=e.dataset.m;document.querySelectorAll(".mi").forEach(x=>x.classList.toggle("on",x===e));showMat(S.mats.find(x=>x.id===matId))});
+ $("bk").onclick=()=>{courseId=null;matId=null;stopViewer();loadMats(isMgr?S.cur:null);render();scrollTo(0,0)};
+ document.querySelectorAll(".mi").forEach(e=>e.onclick=()=>selMat(e.dataset.m));
  if(matId)showMat(S.mats.find(x=>x.id===matId));
 }
-
+function refreshProg(){
+ if(!(courseId&&$("pbf")))return render();
+ const m=S.mats,dn=m.filter(x=>S.prog[x.id]).length,pc=m.length?Math.round(dn/m.length*100):0;
+ $("pbf").style.width=pc+"%";$("pbl").textContent=`${dn} of ${m.length} lessons complete · ${pc}%`;
+ document.querySelectorAll(".mi").forEach((e,i)=>{const d=!!S.prog[e.dataset.m];e.classList.toggle("dn",d);e.querySelector(".no").textContent=d?"✓":i+1});
+ const b=$("dn");if(b&&curMat){const d=!!S.prog[curMat.id];b.textContent=d?"✓ Completed":"Mark as complete";b.classList.toggle("g",d)}
+}
+let curMat=null;
+function lessonBar(){
+ const x=curMat,i=S.mats.findIndex(m=>m.id===x.id),d=!!S.prog[x.id];
+ return `<div class="tb"><button class="g" id="lp" ${i<1?"disabled":""}>← Previous</button><button id="dn" class="${d?"g":""}">${d?"✓ Completed":"Mark as complete"}</button><button class="g" id="ln" ${i>=S.mats.length-1?"disabled":""}>Next →</button></div>`;
+}
 /* ---------- protected viewer ---------- */
 let blobs=[];
 function stopViewer(){blobs.forEach(u=>URL.revokeObjectURL(u));blobs=[]}
 const wm=()=>`<div class="wm">${Array(160).fill(esc(user?user.email:"")).join(" ")}</div>`;
-function wrap(inner){const v=$("vh");if(!v)return;v.innerHTML=`<div class="vw" id="vw">${inner}${wm()}</div><p class="note">Licensed to ${esc(user.email)}. Copying or sharing is not permitted.</p>`;
- const w=$("vw");["contextmenu","dragstart","copy","cut"].forEach(ev=>w.addEventListener(ev,e=>e.preventDefault()))}
+function wrap(inner){const v=$("vh");if(!v||!curMat)return;v.innerHTML=`<h3 class="lt">${esc(curMat.title)}</h3><div class="vw" id="vw">${inner}${wm()}</div>${lessonBar()}<p class="note">Licensed to ${esc(user.email)}. Copying or sharing is not permitted.</p>`;
+ const w=$("vw");["contextmenu","dragstart","copy","cut"].forEach(ev=>w.addEventListener(ev,e=>e.preventDefault()));
+ const i=S.mats.findIndex(m=>m.id===curMat.id);
+ $("lp").onclick=()=>selMat(S.mats[i-1].id);$("ln").onclick=()=>selMat(S.mats[i+1].id);
+ $("dn").onclick=()=>{const d=!!S.prog[curMat.id];setDoc(doc(db,"progress",user.uid),{done:{[curMat.id]:d?"":courseId}},{merge:true}).catch(()=>{});if(!d&&i<S.mats.length-1)setTimeout(()=>selMat(S.mats[i+1].id),500)}}
 function embedUrl(u){
  u=safe(u);if(!u)return"";let m;
  if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/))return`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1`;
@@ -214,10 +279,10 @@ let pdfLib=null;
 function loadPdfJs(){return pdfLib||(pdfLib=new Promise((res,rej)=>{const s=document.createElement("script"),B="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";s.src=B+"pdf.min.js";
  s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([`importScripts("${B}pdf.worker.min.js")`],{type:"text/javascript"}));res(window.pdfjsLib)};s.onerror=rej;document.head.appendChild(s)}))}
 async function showMat(x){
- if(!x)return;
+ if(!x)return;curMat=x;
  if(x.k==="note")return wrap(`<div class="nt">${note(x.text||"")}</div>`);
  if(x.k==="embed")return wrap(`<iframe src="${esc(embedUrl(x.url))}" allowfullscreen allow="fullscreen;autoplay" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`);
- const v=$("vh");v.innerHTML='<p class="note">Loading material…</p>';
+ const v=$("vh");v.innerHTML='<div class="sk" style="height:260px"></div>';
  try{
   const buf=await getBytes(ref(st,x.path),MAXMB*1048576);if(matId!==x.id)return;
   if(x.k==="pdf"){
@@ -260,7 +325,7 @@ const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",set:"S
 function adminView(){
  const pend=S.allPays.filter(p=>p.s==="pending").length;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">Facilitator dashboard</h2><button class="g" id="pv">Preview as learner</button></div>
- <div class="tabs">`+Object.keys(TABS).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${TABS[k]}${k==="pays"&&pend?` (${pend})`:""}</button>`).join("")+`</div>`;
+ ${pend?`<div class="alert"><span>🔔 ${pend} payment${pend>1?"s":""} waiting for your confirmation</span><button data-t="pays">Review now</button></div>`:""}<div class="tabs">`+Object.keys(TABS).map(k=>`<button data-t="${k}" class="${k===tab?"on":""}">${TABS[k]}${k==="pays"&&pend?` (${pend})`:""}</button>`).join("")+`</div>`;
  if(tab==="courses"){
   h+=`<div class="card"><h3 style="margin-top:0">New course</h3><input id="c_t" placeholder="Course title" maxlength="100"><textarea id="c_d" rows="2" placeholder="Short description"></textarea><button id="c_a">Add course</button></div>`;
   h+=S.courses.map(c=>`<div class="row"><div><b>${esc(c.title)}</b> <span class="note">· ${c.live?"Published":"Hidden"}</span><small>${esc(c.desc)}</small></div><div class="acts"><button data-a="open" data-id="${c.id}">Materials</button><button class="g" data-a="live" data-id="${c.id}">${c.live?"Hide":"Publish"}</button><button class="g" data-a="delc" data-id="${c.id}">×</button></div></div>`).join("");
@@ -268,7 +333,7 @@ function adminView(){
  }
  if(tab==="subs")h+=S.learners.sort((a,b)=>(b.at||0)-(a.at||0)).map(l=>{const s=S.allSubs.find(x=>x.id===l.id),on=s&&s.until>Date.now();
   return `<div class="row"><div><b>${esc(l.n||"(no name)")}</b><small>${esc(l.e)}</small><small>${on?"Active until "+fmt(s.until):s&&s.until?"Expired "+fmt(s.until):"No subscription"}</small></div><div class="acts"><button data-a="grant" data-id="${l.id}">+${S.cfg.days||30} days</button><button class="g" data-a="revoke" data-id="${l.id}">Revoke</button></div></div>`}).join("")||'<p class="note">No learners yet.</p>';
- if(tab==="pays")h+=[...S.allPays].sort((a,b)=>(b.at||0)-(a.at||0)).map(p=>`<div class="row"><div><b>${esc(p.n||p.e)}</b> <span class="note">· ${esc(p.s)}</span><small>${esc(p.e)}</small><small>Ref: ${esc(p.ref)} · ${fmt(p.at)}</small></div><div class="acts">${p.s==="pending"?`<button data-a="approve" data-id="${p.id}">Approve</button><button class="g" data-a="reject" data-id="${p.id}">Reject</button>`:`<button class="g" data-a="delp" data-id="${p.id}">×</button>`}</div></div>`).join("")||'<p class="note">No payments yet.</p>';
+ if(tab==="pays")h+=[...S.allPays].sort((a,b)=>(a.s==="pending"?0:1)-(b.s==="pending"?0:1)||(b.at||0)-(a.at||0)).map(p=>`<div class="row ${p.s==="pending"?"":"done"}"><div><b>${esc(p.n||p.e)}</b> <span class="badge ${p.s==="approved"?"ok":""}">${esc(p.s)}</span><small>${esc(p.e)}</small><small>${esc(p.m||"")} ${p.a?"· "+esc(p.a):""} · Ref: <b>${esc(p.ref)}</b> · ${fmt(p.at)}</small>${p.ph?`<small>📞 <a href="https://wa.me/${digits(p.ph)}" target="_blank" rel="noopener">${esc(p.ph)}</a></small>`:""}</div><div class="acts">${p.s==="pending"?`<button data-a="approve" data-id="${p.id}">Approve</button><button class="g" data-a="reject" data-id="${p.id}">Reject</button>`:`<button class="g" data-a="delp" data-id="${p.id}">×</button>`}</div></div>`).join("")||'<p class="note">No payments yet.</p>';
  if(tab==="set"){const c=S.cfg;h+=`<div class="card"><input id="s_p" placeholder="Price shown to learners, e.g. GHS 150 per month" value="${esc(c.price)}"><input id="s_d" type="number" inputmode="numeric" placeholder="Days of access per payment" value="${esc(c.days||30)}"><input id="s_u" placeholder="Payment link (Paystack payment page, optional)" value="${esc(c.payUrl)}"><textarea id="s_i" rows="4" placeholder="Payment instructions, e.g. MoMo number and name">${esc(c.instr)}</textarea><button id="s_b">Save settings</button> <span class="note" id="s_m"></span></div>`}
  return h;
 }
@@ -311,7 +376,7 @@ async function act(a,id){
  const days=(S.cfg.days||30)*DAY,grant=async(uid,p)=>{const s=S.allSubs.find(x=>x.id===uid),from=Math.max(Date.now(),s&&s.until||0);await setDoc(doc(db,"subs",uid),{until:from+days,n:p?p.n:"",e:p?p.e:""},{merge:true})};
  if(a==="open"){S.cur=S.cur===id?null:id;loadMats(S.cur);render()}
  if(a==="live"){const c=S.courses.find(x=>x.id===id);await setDoc(doc(db,"courses",id),{live:!c.live},{merge:true})}
- if(a==="delc"&&confirm("Delete this course? Its materials will no longer be reachable.")){S.mats.filter(m=>m.course===id).forEach(m=>delMat(m));await deleteDoc(doc(db,"courses",id));S.cur=null;loadMats(null)}
+ if(a==="delc"&&confirm("Delete this course and all its materials?")){const ms=S.mats.filter(m=>m.course===id);S.cur=null;loadMats(null);for(const m of ms)await delMat(m);await deleteDoc(doc(db,"courses",id))}
  if(a==="delm"&&confirm("Delete this material?"))delMat(S.mats.find(x=>x.id===id));
  if(a==="grant"){const l=S.learners.find(x=>x.id===id);await grant(id,l)}
  if(a==="revoke"&&confirm("Revoke access now?"))await setDoc(doc(db,"subs",id),{until:0},{merge:true});
