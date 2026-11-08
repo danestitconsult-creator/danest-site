@@ -28,3 +28,4 @@
 5. Payment alerts: when a learner confirms payment you see a banner and a count in the tab title on learn.html, and the learner can notify you in one tap by WhatsApp or email (set your WhatsApp number and email under Site details on the main site).
 6. The first lesson of each course is free to any signed-in learner; the rest need a subscription. Use "Make free / Make paid" on any lesson to change this.
 7. Learners can comment on lessons or message you; reply from the Comments tab.
+8. Quizzes: add a lesson of type Quiz and write questions in the simple format shown (mark the correct option with *). Quiz Bot runs it in a chat style, saves each learner's score, and you can see all scores in the Quiz results tab.

@@ -112,6 +112,11 @@ footer{margin-top:72px;padding:28px 0 max(28px,env(safe-area-inset-bottom));bord
 @media(prefers-color-scheme:dark){.alert{background:#3a2e08;color:#ffd978;border-color:#7a5d10}}
 .stp{display:flex;gap:6px;margin:0 0 14px}.stp span{flex:1;text-align:center;font-size:12px;font-weight:700;padding:7px 4px;border-radius:99px;background:var(--bg);border:1px solid var(--b);color:var(--m)}.stp span.on{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border-color:transparent}
 .cm{border-top:1px solid var(--b);padding:8px 0}.cm p{margin:2px 0;overflow-wrap:anywhere}.rp{background:var(--bg);border-left:3px solid var(--a);padding:6px 10px;border-radius:6px;font-size:14px;margin-top:4px}.cmb textarea{margin-bottom:8px}
+.qz{padding:14px}.qlog{max-height:50vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px}
+.bb{display:flex;gap:8px;max-width:94%;animation:up .25s ease both}.bb>div{padding:10px 13px;border-radius:16px;font-size:15px;overflow-wrap:anywhere}
+.bb.bt>div{background:var(--bg);border:1px solid var(--b);border-top-left-radius:4px}.bb.me{align-self:flex-end}.bb.me>div{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border-top-right-radius:4px}
+.av{flex:none;width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--b);display:grid;place-items:center}
+.qctl{display:grid;gap:8px;margin-top:12px}.qo{text-align:left;white-space:normal;height:auto}.qb{color:var(--a);font-weight:700}
 .ok2{border-color:#14803c!important;background:color-mix(in srgb,#14803c 10%,var(--s))}
 .lk{background:none;border:0;color:var(--a);padding:0;min-height:0;box-shadow:none;text-decoration:underline;font-weight:600}
 </style>
@@ -134,9 +139,9 @@ const $=i=>document.getElementById(i),esc=s=>String(s==null?"":s).replace(/&/g,"
 const safe=u=>/^https?:\/\//i.test(u||"")?u:"";
 $("yr").textContent=new Date().getFullYear();
 
-let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},main:{},prog:{},cmts:[],loaded:false,sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
+let user=null,isMgr=false,unsubs=[],S={courses:[],mats:[],cfg:{},main:{},prog:{},cmts:[],res:{},allRes:[],loaded:false,sub:null,pays:[],learners:[],allSubs:[],allPays:[]};
 let courseId=null,matId=null,mode="signin",tab="courses",locked=false,msg="";
-const ICON={note:"📝",embed:"🎞️",pdf:"📊",image:"🖼️",video:"🎬",audio:"🎧"};
+const ICON={note:"📝",embed:"🎞️",pdf:"📊",image:"🖼️",video:"🎬",audio:"🎧",quiz:"🧩"};
 const active=()=>isMgr||(S.sub&&S.sub.until>Date.now());
 const fmt=t=>new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
 const listen=(q,fn,err)=>unsubs.push(onSnapshot(q,s=>fn(s.docs.map(d=>({id:d.id,...d.data()}))),err||(e=>console.warn(e.code))));
@@ -144,7 +149,7 @@ const listen=(q,fn,err)=>unsubs.push(onSnapshot(q,s=>fn(s.docs.map(d=>({id:d.id,
 /* ---------- auth state ---------- */
 onAuthStateChanged(auth,u=>{
  user=u;isMgr=!!u&&u.email===ADMIN_EMAIL;unsubs.forEach(f=>f());unsubs=[];
- S.sub=null;S.prog={};S.cmts=[];S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
+ S.sub=null;S.prog={};S.cmts=[];S.res={};S.mats=[];S.pays=[];locked=false;if(matUn){matUn();matUn=null}
  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
  $("ab").style.display="";$("ab").textContent=u?"Sign out":"Sign in";
  listen(collection(db,"courses"),r=>{S.courses=r.sort((a,b)=>(a.at||0)-(b.at||0));S.loaded=true;render()},()=>{S.loaded=true;render()});
@@ -155,12 +160,14 @@ onAuthStateChanged(auth,u=>{
   listen(query(collection(db,"comments"),where("uid","==",u.uid)),r=>{S.cmts=r;cmtRefresh()});
   listen(query(collection(db,"payments"),where("uid","==",u.uid)),r=>{S.pays=r;render()});
   unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
+  unsubs.push(onSnapshot(doc(db,"results",u.uid),s=>{S.res=s.exists()?s.data().r||{}:{};document.querySelectorAll(".mi").forEach(e=>{const q=e.querySelector(".qb");if(q)q.textContent=bestTxt(e.dataset.m)})},()=>{}));
   if(u.displayName)setDoc(doc(db,"learners",u.uid),{n:u.displayName,e:u.email,at:Date.now()}).catch(()=>{});
  }
  if(isMgr){
   unsubs.push(onSnapshot(doc(db,"progress",u.uid),s=>{S.prog=s.exists()?s.data().done||{}:{};refreshProg()},()=>{}));
   listen(collection(db,"learners"),r=>{S.learners=r;render()});
   listen(collection(db,"comments"),r=>{S.cmts=r;cmtRefresh()});
+  listen(collection(db,"results"),r=>{S.allRes=r;render()});
   listen(collection(db,"subs"),r=>{S.allSubs=r;render()});
   listen(collection(db,"payments"),r=>{S.allPays=r;render()});
  }
@@ -241,7 +248,7 @@ function courseView(){
  if(locked)return h+`<div class="card">Your subscription has expired. Please renew to continue.</div>`;
  const more=Math.max(0,(c.n||0)-m.length),up=ac?"":`<div class="card" style="margin-top:12px;text-align:center"><div style="font-size:34px">🔒</div><b>${more?more+" more lesson"+(more>1?"s":""):"More lessons"} unlock with a subscription</b><p class="note">Enjoy the free lesson, then subscribe to continue.</p><button id="sub">Subscribe to unlock</button></div>`;
  if(!m.length)return h+(ac?'<p class="note">No materials in this course yet.</p>':'<p class="note">This course has no free lesson yet.</p>')+up;
- return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio"}[x.k]||""}${x.free?" · 🎁 Free":""}</div></div></div>`).join("")+up+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
+ return h+`<div class="cl"><div class="ls">`+m.map((x,i)=>`<div class="mi ${x.id===matId?"on":""} ${S.prog[x.id]?"dn":""}" data-m="${x.id}"><span class="no">${S.prog[x.id]?"✓":i+1}</span><div><b>${esc(x.title)}</b><div class="note">${ICON[x.k]||"📄"} ${{note:"Reading",embed:"Video / slides",pdf:"Slides (PDF)",image:"Image",video:"Video",audio:"Audio",quiz:"Quiz"}[x.k]||""}${x.k==="quiz"?`<span class="qb">${bestTxt(x.id)}</span>`:""}${x.free?" · 🎁 Free":""}</div></div></div>`).join("")+up+`</div><div id="vh">${matId?'<p class="note">Loading…</p>':'<div class="card" style="text-align:center"><div style="font-size:40px">👈</div><b>Choose a lesson to begin</b></div>'}</div></div>`;
 }
 function selMat(id){matId=id;document.querySelectorAll(".mi").forEach(e=>e.classList.toggle("on",e.dataset.m===id));showMat(S.mats.find(x=>x.id===id));if(innerWidth<=900)$("vh").scrollIntoView({behavior:"smooth"})}
 function bindCourse(){
@@ -290,11 +297,36 @@ function note(t){return t.split(/\n/).map(l=>/^# /.test(l)?`<h3>${esc(l.slice(2)
 async function fetchFile(x){
  const ps=await Promise.all(Array.from({length:x.cn||0},(_,i)=>getDoc(doc(db,"files",x.id+"_"+i)))),b=atob(ps.map(p=>p.data().d).join("")),u=new Uint8Array(b.length);
  for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer}
+const bestOf=id=>S.res[id]?S.res[id].b:null,bestTxt=id=>bestOf(id)!=null?` · Best ${bestOf(id)}%`:"";
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const bub=(t,me)=>`<div class="bb ${me?"me":"bt"}">${me?"":'<span class="av">🤖</span>'}<div>${t}</div></div>`;
+function quizStart(x){
+ const first=(user.displayName||"").split(" ")[0]||"there",best=bestOf(x.id),pass=x.pass||70;
+ $("qlog").innerHTML=bub(`Hi ${esc(first)}! 👋 I'm <b>Quiz Bot</b>. This quiz has <b>${x.qs.length}</b> question${x.qs.length>1?"s":""} and you need <b>${pass}%</b> to pass. ${best!=null?`Your best score so far is <b>${best}%</b>.`:"Take your time and good luck!"}`);
+ $("qctl").innerHTML=`<button id="qgo">${best!=null?"Retake quiz":"Start quiz"}</button>`;$("qgo").onclick=()=>runQuiz(x)}
+function runQuiz(x){
+ const qs=shuf(x.qs).map(q=>({q:q.q,e:q.e,o:shuf(q.o.map((t,i)=>({t,c:i===q.a})))})),log=$("qlog"),ctl=$("qctl"),pass=x.pass||70;let i=0,sc=0;log.innerHTML="";
+ const add=(h,me)=>{log.insertAdjacentHTML("beforeend",bub(h,me));log.scrollTop=log.scrollHeight};
+ const ask=()=>{const q=qs[i];add(`<b>Question ${i+1} of ${qs.length}</b><br>${esc(q.q)}`);
+  ctl.innerHTML=q.o.map((o,k)=>`<button class="g qo" data-k="${k}">${"ABCDEFGH"[k]}. ${esc(o.t)}</button>`).join("");
+  ctl.querySelectorAll(".qo").forEach(b=>b.onclick=()=>{const o=q.o[+b.dataset.k];add(esc(o.t),true);
+   if(o.c){sc++;add(`✅ <b>Correct!</b> ${esc(q.e||"")}`)}else add(`❌ Not quite. The right answer is <b>${esc(q.o.find(z=>z.c).t)}</b>. ${esc(q.e||"")}`);
+   i++;ctl.innerHTML=`<button id="qn">${i<qs.length?"Next question →":"See my results"}</button>`;$("qn").onclick=i<qs.length?ask:finish})};
+ const finish=async()=>{
+  const pct=Math.round(sc/qs.length*100),ok=pct>=pass,n=S.mats.findIndex(m=>m.id===x.id),nxt=S.mats[n+1];
+  add(`${ok?"🎉":"💪"} You scored <b>${sc}/${qs.length} (${pct}%)</b>. ${ok?"<b>You passed!</b> Well done.":`The pass mark is ${pass}%. Review the lesson and try again, you can do it!`}${isMgr?"<br><i>Preview only: results are not saved.</i>":""}`);
+  ctl.innerHTML=`<button id="qr">Retake quiz</button>${ok&&nxt?'<button class="g" id="qx">Next lesson →</button>':""}`;
+  $("qr").onclick=()=>runQuiz(x);if($("qx"))$("qx").onclick=()=>selMat(nxt.id);
+  if(isMgr)return;const pr=S.res[x.id]||{};
+  const en={p:pct,s:sc,t:qs.length,b:Math.max(pr.b||0,pct),ok:ok||!!pr.ok,n:(pr.n||0)+1,mt:x.title,ct:(S.courses.find(c=>c.id===courseId)||{}).title||"",at:Date.now()};
+  try{await setDoc(doc(db,"results",user.uid),{n:user.displayName||"",e:user.email,r:{[x.id]:en}},{merge:true});if(ok)setDoc(doc(db,"progress",user.uid),{done:{[x.id]:courseId}},{merge:true}).catch(()=>{})}catch(e){}};
+ ask()}
 let pdfLib=null;
 function loadPdfJs(){return pdfLib||(pdfLib=new Promise((res,rej)=>{const s=document.createElement("script"),B="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";s.src=B+"pdf.min.js";
  s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([`importScripts("${B}pdf.worker.min.js")`],{type:"text/javascript"}));res(window.pdfjsLib)};s.onerror=rej;document.head.appendChild(s)}))}
 async function showMat(x){
  if(!x)return;curMat=x;
+ if(x.k==="quiz"){wrap('<div class="qz"><div class="qlog" id="qlog"></div><div class="qctl" id="qctl"></div></div>');return quizStart(x)}
  if(x.k==="note")return wrap(`<div class="nt">${note(x.text||"")}</div>`);
  if(x.k==="embed")return wrap(`<iframe src="${esc(embedUrl(x.url))}" allowfullscreen allow="fullscreen;autoplay" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`);
  const v=$("vh");v.innerHTML='<div class="sk" style="height:260px"></div>';
@@ -336,7 +368,7 @@ function bindAuth(){
 }
 
 /* ---------- facilitator dashboard ---------- */
-const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",cmts:"Comments",set:"Subscription settings"};
+const TABS={courses:"Courses & materials",subs:"Learners",pays:"Payments",cmts:"Comments",res:"Quiz results",set:"Subscription settings"};
 function adminView(){
  const pend=S.allPays.filter(p=>p.s==="pending").length,cm=S.cmts.filter(c=>!c.r).length;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">Facilitator dashboard</h2><button class="g" id="pv">Preview as learner</button></div>
@@ -350,17 +382,30 @@ function adminView(){
   return `<div class="row"><div><b>${esc(l.n||"(no name)")}</b><small>${esc(l.e)}</small><small>${on?"Active until "+fmt(s.until):s&&s.until?"Expired "+fmt(s.until):"No subscription"}</small></div><div class="acts"><button data-a="grant" data-id="${l.id}">+${S.cfg.days||30} days</button><button class="g" data-a="revoke" data-id="${l.id}">Revoke</button></div></div>`}).join("")||'<p class="note">No learners yet.</p>';
  if(tab==="pays")h+=[...S.allPays].sort((a,b)=>(a.s==="pending"?0:1)-(b.s==="pending"?0:1)||(b.at||0)-(a.at||0)).map(p=>`<div class="row ${p.s==="pending"?"":"done"}"><div><b>${esc(p.n||p.e)}</b> <span class="badge ${p.s==="approved"?"ok":""}">${esc(p.s)}</span><small>${esc(p.e)}</small><small>${esc(p.m||"")} ${p.a?"· "+esc(p.a):""} · Ref: <b>${esc(p.ref)}</b> · ${fmt(p.at)}</small>${p.ph?`<small>📞 <a href="https://wa.me/${digits(p.ph)}" target="_blank" rel="noopener">${esc(p.ph)}</a></small>`:""}</div><div class="acts">${p.s==="pending"?`<button data-a="approve" data-id="${p.id}">Approve</button><button class="g" data-a="reject" data-id="${p.id}">Reject</button>`:`<button class="g" data-a="delp" data-id="${p.id}">×</button>`}</div></div>`).join("")||'<p class="note">No payments yet.</p>';
  if(tab==="cmts")h+=[...S.cmts].sort((a,b)=>(!a.r?0:1)-(!b.r?0:1)||(b.at||0)-(a.at||0)).map(c=>`<div class="row" style="flex-direction:column"><div style="width:100%"><b>${esc(c.n||c.e)}</b> ${c.r?'<span class="badge ok">Replied</span>':'<span class="badge">New</span>'}<small>${esc(c.e)} · ${fmt(c.at)} · ${c.ct?esc(c.ct)+" › "+esc(c.mt):"General message"}</small><p style="margin:6px 0">${esc(c.t)}</p>${c.r?`<small>Your reply: ${esc(c.r)}</small>`:""}<input id="r_${c.id}" placeholder="${c.r?"Edit your reply":"Write a reply"}"></div><div class="acts"><button data-a="reply" data-id="${c.id}">Send reply</button><button class="g" data-a="delcm" data-id="${c.id}">×</button></div></div>`).join("")||'<p class="note">No comments yet.</p>';
+ if(tab==="res")h+=S.allRes.flatMap(d=>Object.values(d.r||{}).map(en=>({...en,nm:d.n||d.e,em:d.e}))).sort((a,b)=>(b.at||0)-(a.at||0)).map(r=>`<div class="row"><div><b>${esc(r.nm)}</b> <span class="badge ${r.ok?"ok":""}">${r.ok?"Passed":"Not passed yet"}</span><small>${esc(r.em)}</small><small>${esc(r.ct||"")} › ${esc(r.mt||"")}</small><small>Last: ${r.p}% (${r.s}/${r.t}) · Best: ${r.b}% · Attempts: ${r.n} · ${fmt(r.at)}</small></div></div>`).join("")||'<p class="note">No quiz attempts yet.</p>';
  if(tab==="set"){const c=S.cfg;h+=`<div class="card"><input id="s_p" placeholder="Price shown to learners, e.g. GHS 150 per month" value="${esc(c.price)}"><input id="s_d" type="number" inputmode="numeric" placeholder="Days of access per payment" value="${esc(c.days||30)}"><input id="s_u" placeholder="Payment link (Paystack payment page, optional)" value="${esc(c.payUrl)}"><textarea id="s_i" rows="4" placeholder="Payment instructions, e.g. MoMo number and name">${esc(c.instr)}</textarea><button id="s_b">Save settings</button> <span class="note" id="s_m"></span></div>`}
  return h;
 }
 function matAdmin(){
  const c=S.courses.find(x=>x.id===S.cur);if(!c)return"";
  return `<h3>Materials: ${esc(c.title)}</h3><div class="card"><input id="m_t" placeholder="Lesson title" maxlength="120">
- <select id="m_k"><option value="embed">Video or slides link (YouTube, Vimeo, Google Slides, Drive)</option><option value="file">Upload file (PDF slides, image, audio, short video)</option><option value="note">Written lesson</option></select>
+ <select id="m_k"><option value="embed">Video or slides link (YouTube, Vimeo, Google Slides, Drive)</option><option value="file">Upload file (PDF slides, image, audio, short video)</option><option value="note">Written lesson</option><option value="quiz">Quiz (auto-graded by Quiz Bot)</option></select>
  <div id="m_f"></div><button id="m_a">Add material</button> <span class="note" id="m_s"></span></div>`
- +S.mats.map(x=>`<div class="row"><div><b>${ICON[x.k]||"📄"} ${esc(x.title)}</b><small>${x.free?"🎁 Free lesson · ":""}${esc(x.name||x.url||"")}</small></div><div class="acts"><button class="g" data-a="free" data-id="${x.id}">${x.free?"Make paid":"Make free"}</button><button class="g" data-a="delm" data-id="${x.id}">×</button></div></div>`).join("");
+ +S.mats.map(x=>`<div class="row"><div><b>${ICON[x.k]||"📄"} ${esc(x.title)}</b><small>${x.free?"🎁 Free lesson · ":""}${esc(x.name||x.url||(x.qs?x.qs.length+" questions":""))}</small></div><div class="acts"><button class="g" data-a="free" data-id="${x.id}">${x.free?"Make paid":"Make free"}</button><button class="g" data-a="delm" data-id="${x.id}">×</button></div></div>`).join("");
 }
-function matFields(){const k=$("m_k").value;$("m_f").innerHTML=k==="embed"?'<input id="m_u" placeholder="https:// link to video or slides">':k==="note"?'<textarea id="m_x" rows="6" placeholder="Lesson text. Start a line with # for a heading or - for a bullet."></textarea>':`<input id="m_fl" type="file" accept="application/pdf,image/*,audio/*,video/mp4,video/webm"><p class="note">Max ${MAXMB} MB per file. Export PowerPoint decks to PDF first (compress if large). Use YouTube/Vimeo (unlisted) for videos.</p>`}
+function matFields(){const k=$("m_k").value;$("m_f").innerHTML=k==="embed"?'<input id="m_u" placeholder="https:// link to video or slides">':k==="quiz"?QUIZ_FORM:k==="note"?'<textarea id="m_x" rows="6" placeholder="Lesson text. Start a line with # for a heading or - for a bullet."></textarea>':`<input id="m_fl" type="file" accept="application/pdf,image/*,audio/*,video/mp4,video/webm"><p class="note">Max ${MAXMB} MB per file. Export PowerPoint decks to PDF first (compress if large). Use YouTube/Vimeo (unlisted) for videos.</p>`}
+const QUIZ_FORM=`<textarea id="m_q" rows="12" placeholder="Q: What does HTML stand for?&#10;A) HyperText Markup Language *&#10;B) High Tech Modern Language&#10;C) Home Tool Markup Language&#10;Why: HTML structures web pages.&#10;&#10;Q: Next question here&#10;A) Option one&#10;B) Option two *"></textarea><input id="m_pass" type="number" inputmode="numeric" min="1" max="100" value="70" placeholder="Pass mark %"><p class="note">Write each question as shown, with a blank line between questions. Put * after the correct option. "Why:" is optional and is shown after the learner answers. 2 to 8 options per question. Pass mark is a percentage.</p>`;
+function parseQuiz(txt){
+ const qs=[],errs=[];
+ txt.trim().split(/\n\s*\n/).filter(b=>b.trim()).forEach((blk,bi)=>{
+  let q=null,o=[],a=-1,e="";
+  for(const l of blk.split("\n").map(x=>x.trim()).filter(Boolean)){let m;
+   if(m=l.match(/^Q\s*\d*\s*[:.)]\s*(.+)/i))q=m[1];
+   else if(m=l.match(/^([A-H])\s*[).]\s*(.+?)(\s*\*)?$/i)){o.push(m[2].trim());if(m[3])a=o.length-1}
+   else if(m=l.match(/^(why|explain|note)\s*:\s*(.+)/i))e=m[2];
+   else if(!q)q=l}
+  if(!q||o.length<2||a<0)errs.push("Question "+(bi+1));else qs.push({q,o,a,e})});
+ return{qs,errs}}
 const kindOf=t=>t==="application/pdf"?"pdf":t.startsWith("image/")?"image":t.startsWith("video/")?"video":t.startsWith("audio/")?"audio":"";
 function bindAdmin(){
  $("pv").onclick=()=>{const c=S.courses.find(x=>x.id===S.cur)||S.courses[0];if(c)openCourse(c.id);else alert("Add a course first.")};
@@ -378,6 +423,8 @@ async function addMat(){
  const mref=doc(collection(db,"materials")),free=S.mats.length===0,base={course:S.cur,title:t,at:Date.now(),free};b.disabled=true;
  try{
   if(k==="embed"){const u=safe($("m_u").value.trim());if(!u){s.textContent="Enter a valid https link.";b.disabled=false;return}await setDoc(mref,{...base,k:"embed",url:u})}
+  else if(k==="quiz"){const r=parseQuiz($("m_q").value);if(r.errs.length||!r.qs.length){s.textContent=r.qs.length?"Check: "+r.errs.join(", ")+" needs a question, 2+ options and one option marked with *.":"Write at least one question.";b.disabled=false;return}
+   await setDoc(mref,{...base,k:"quiz",qs:r.qs,pass:Math.min(100,Math.max(1,+$("m_pass").value||70))})}
   else if(k==="note"){const x=$("m_x").value.trim();if(!x){s.textContent="Write the lesson text.";b.disabled=false;return}await setDoc(mref,{...base,k:"note",text:x})}
   else{const f=$("m_fl").files[0];if(!f){s.textContent="Choose a file.";b.disabled=false;return}const kind=kindOf(f.type);
    if(!kind||f.size>MAXMB*1048576){s.textContent="Unsupported type or larger than "+MAXMB+" MB.";b.disabled=false;return}
